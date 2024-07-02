@@ -1,7 +1,7 @@
 const { sequelize } = require('../db/connect.js');
 const { DataTypes } = require('sequelize');
 
-const Plataforma = sequelize.define("plataforma_registro",{
+const Plataforma = sequelize.define('plataforma_registro', {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -23,16 +23,9 @@ const Plataforma = sequelize.define("plataforma_registro",{
     idCliente: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    createdAt: {
-        type: DataTypes.DATE
-    },
-    updatedAt: {
-        type: DataTypes.DATE
     }
-})
-
-
-
-
+}, {
+    tableName: 'plataforma_registro',
+    timestamps: false
+});
 module.exports = Plataforma
