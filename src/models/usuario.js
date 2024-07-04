@@ -1,33 +1,34 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db/connect');
 
-const Topico = sequelize.define('Topico', {
+const Usuario = sequelize.define('Usuario', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  id_modulo: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Modulos',
-      key: 'id',
-    },
-  },
-  nome_topico: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
-  ebookUrlGeral: {
+  email: {
     type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
   },
-  textoApoio: {
+  senha: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
+  tipo: {
+    type: DataTypes.ENUM('adm', 'professor'),
+    allowNull: false,
+  }
 }, {
-  tableName: 'Topicos',
+  sequelize,
+  tableName: 'Usuarios',
   timestamps: false,
 });
 
-module.exports = Topico;
+module.exports = Usuario;

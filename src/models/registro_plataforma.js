@@ -1,31 +1,39 @@
-const { sequelize } = require('../db/connect.js');
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../db/connect");
 
-const Plataforma = sequelize.define('plataforma_registro', {
+const PlataformaRegistro = sequelize.define(
+  "PlataformaRegistro",
+  {
     id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    nomeCliente: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
     plataformaUrl: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     plataformaNome: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     idCliente: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-}, {
-    tableName: 'plataforma_registro',
-    timestamps: false
-});
-module.exports = Plataforma
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    usuario_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Usuarios",
+        key: "id",
+      },
+    },
+  },
+  {
+    tableName: "plataformaRegistro",
+    timestamps: false,
+  }
+);
+
+module.exports = PlataformaRegistro;

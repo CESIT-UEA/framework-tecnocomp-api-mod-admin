@@ -1,8 +1,7 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../db/connect");
-const Exercicios = require("./exercicios");
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../db/connect');
 
-const Alternativas = sequelize.define("Alternativas", {
+const Alternativas = sequelize.define('Alternativas', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,10 +9,11 @@ const Alternativas = sequelize.define("Alternativas", {
   },
   id_exercicio: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: Exercicios,
-      key: 'id'
-    }
+      model: 'Exercicios',
+      key: 'id',
+    },
   },
   descricao: {
     type: DataTypes.TEXT,
@@ -24,11 +24,9 @@ const Alternativas = sequelize.define("Alternativas", {
   correta: {
     type: DataTypes.BOOLEAN,
   },
-},{
+}, {
+  tableName: 'Alternativas',
   timestamps: false,
 });
-
-Exercicios.hasMany(Alternativas, { foreignKey: 'id_exercicio' });
-Alternativas.belongsTo(Exercicios, { foreignKey: 'id_exercicio' });
 
 module.exports = Alternativas;

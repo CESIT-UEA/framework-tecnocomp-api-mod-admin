@@ -1,8 +1,7 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../db/connect");
-const Topico = require("./topico");
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../db/connect');
 
-const VideoUrls = sequelize.define("VideoUrls", {
+const VideoUrls = sequelize.define('VideoUrls', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,19 +9,18 @@ const VideoUrls = sequelize.define("VideoUrls", {
   },
   id_topico: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: Topico,
-      key: 'id'
-    }
+      model: 'Topicos',
+      key: 'id',
+    },
   },
   url: {
     type: DataTypes.STRING,
   },
-},{
+}, {
+  tableName: 'videoUrls',
   timestamps: false,
 });
-
-Topico.hasMany(VideoUrls, { foreignKey: 'id_topico' });
-VideoUrls.belongsTo(Topico, { foreignKey: 'id_topico' });
 
 module.exports = VideoUrls;

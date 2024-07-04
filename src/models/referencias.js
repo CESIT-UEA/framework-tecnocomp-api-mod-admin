@@ -1,8 +1,7 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../db/connect");
-const Topico = require("./topico");
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../db/connect');
 
-const Referencias = sequelize.define("Referencias", {
+const Referencias = sequelize.define('Referencias', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,10 +9,11 @@ const Referencias = sequelize.define("Referencias", {
   },
   id_topico: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: Topico,
-      key: 'id'
-    }
+      model: 'Topicos',
+      key: 'id',
+    },
   },
   caminhoDaImagem: {
     type: DataTypes.STRING,
@@ -21,11 +21,9 @@ const Referencias = sequelize.define("Referencias", {
   referencia: {
     type: DataTypes.TEXT,
   },
-},{
+}, {
+  tableName: 'Referencias',
   timestamps: false,
 });
-
-Topico.hasMany(Referencias, { foreignKey: 'id_topico' });
-Referencias.belongsTo(Topico, { foreignKey: 'id_topico' });
 
 module.exports = Referencias;

@@ -1,34 +1,29 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../db/connect");
-const Topico = require("./topico");
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../db/connect');
 
-const SaibaMais = sequelize.define(
-  "SaibaMais",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+const SaibaMais = sequelize.define('SaibaMais', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  id_topico: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Topicos',
+      key: 'id',
     },
-    id_topico: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: Topico,
-        key: "id",
-      },
-    },
-    descricao: {
-      type: DataTypes.STRING,
-    },
-    url: {
-      type: DataTypes.STRING,
-    },
-  },{
-    timestamps: false,
-  }
-);
-
-Topico.hasMany(SaibaMais, { foreignKey: "id_topico" });
-SaibaMais.belongsTo(Topico, { foreignKey: "id_topico" });
+  },
+  descricao: {
+    type: DataTypes.STRING,
+  },
+  url: {
+    type: DataTypes.STRING,
+  },
+}, {
+  tableName: 'SaibaMais',
+  timestamps: false,
+});
 
 module.exports = SaibaMais;

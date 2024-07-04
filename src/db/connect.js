@@ -6,4 +6,3 @@ const sequelize = new Sequelize('db', 'root', 'root', {
   });
 
 module.exports = { sequelize }
-// module.exports = Artigo

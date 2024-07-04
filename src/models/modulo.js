@@ -1,7 +1,7 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../db/connect");
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../db/connect');
 
-const Modulo = sequelize.define("Modulo", {
+const Modulo = sequelize.define('Modulo', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -14,10 +14,29 @@ const Modulo = sequelize.define("Modulo", {
   video_inicial: {
     type: DataTypes.STRING,
   },
-},{
-  sequelize,
-  tableName: 'Modulo', // Define explicitamente o nome da tabela,
-  timestamps: false
+  nativo: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  usuario_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Usuarios',
+      key: 'id',
+    },
+  },
+  plataforma_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'PlataformaRegistro',
+      key: 'id',
+    },
+  },
+}, {
+  tableName: 'Modulos',
+  timestamps: false,
 });
 
 module.exports = Modulo;
