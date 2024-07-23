@@ -9,7 +9,7 @@ const plataformaRoutes = require('./routes/plataforma');
 const moduloRoutes = require('./routes/modulo');
 
 const app = express();
-const PORT = 3101;
+const PORT = 8000;
 const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
 
 app.use(express.json());
