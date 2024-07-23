@@ -1,7 +1,7 @@
 const {Sequelize, DataTypes} = require("sequelize");
 
 const sequelize = new Sequelize('tecnocomp', 'tecnocomp', '0a463635baa5a', {
-    host: 'localhost',
+    host: '172.25.1.5',
     dialect: 'mysql',
     port:3306
   });
