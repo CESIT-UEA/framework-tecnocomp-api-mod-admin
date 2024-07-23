@@ -24,10 +24,10 @@ jobs:
 
       - name: Docker Compose Build
         working-directory: ./
-        run: docker compose build
+        run: docker compose build --tag ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:latest
 
       - name: Push to Docker Hub Container Registry
         run: |
-          docker tag framework-tecnocomp-api-mod-admin:latest ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:${{ github.run_id }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:latest ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:${{ github.run_id }}
           docker push ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:${{ github.run_id }}
           docker push ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:latest
