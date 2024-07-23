@@ -6,6 +6,6 @@ services:
     build: ./
     working_dir: /framework-tecnocomp-api-mod-admin
     ports:
-      - 8000:8000
+      - 8001:8000
     networks:
       - tecnocomp-network
