@@ -18,9 +18,14 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/clockbox:latest
+      
+      - name: Docker Compose Build
+        working-directory: ./
+        run: docker compose build
+        
+      - name: Push to Docker Hub Container Registry
+        run:  |
+          docker tag ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:latest ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:${{ github.run_id }}
+          
+          docker push ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:${{ github.run_id }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/framework-tecnocomp-api-mod-admin:latest
