@@ -2,6 +2,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const fs = require('fs');
+const https = require('https');
 const { sequelize } = require('./db/connect');
 const { Usuario } = require('./models');
 const authRoutes = require('./routes/auth');
@@ -11,6 +13,12 @@ const moduloRoutes = require('./routes/modulo');
 const app = express();
 const PORT = 8001;
 const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
+
+// Configuração SSL
+const sslOptions = {
+  key: fs.readFileSync('/private/uea.edu.br.key'),
+  cert: fs.readFileSync('/certs/uea.edu.br.fullchain.crt')
+};
 
 app.use(express.json());
 app.use(cors());
@@ -36,8 +44,8 @@ const setup = async () => {
     console.log('Administrador padrão criado com sucesso.');
   }
 
-  app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+  https.createServer(sslOptions, app).listen(PORT, () => {
+    console.log(`Servidor rodando em https://172.25.1.5:${PORT}`);
   });
 };
 
