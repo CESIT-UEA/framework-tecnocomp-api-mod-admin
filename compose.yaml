@@ -16,8 +16,8 @@ services:
     ports:
       - 8001:8001
     volumes:
-      - /private:/etc/ssl/private/
-      - /certs:/etc/ssl/certs/
+      - ./private:/etc/ssl/private/
+      - ./certs:/etc/ssl/certs/
   
 
 # The commented out section below is an example of how to define a PostgreSQL

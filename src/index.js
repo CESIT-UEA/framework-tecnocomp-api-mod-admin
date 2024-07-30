@@ -16,8 +16,8 @@ const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
 
 // Configuração SSL
 const sslOptions = {
-  key: fs.readFileSync('/private/uea.edu.br.key'),
-  cert: fs.readFileSync('/certs/uea.edu.br.fullchain.crt')
+  key: fs.readFileSync('./private/uea.edu.br.key'),
+  cert: fs.readFileSync('./certs/uea.edu.br.fullchain.crt')
 };
 
 app.use(express.json());
