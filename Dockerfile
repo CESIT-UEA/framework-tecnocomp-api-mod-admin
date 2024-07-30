@@ -16,7 +16,7 @@ ENV NODE_ENV production
 
 WORKDIR /usr/src/app
 RUN mkdir ./private
-RUN mdkir ./certs 
+RUN mkdir ./certs 
 
 COPY ./private/uea.edu.br.key /etc/ssl/private/uea.edu.br.key
 COPY ./certs/uea.edu.br.fullchain.crt /etc/ssl/certs/uea.edu.br.fullchain.crt
