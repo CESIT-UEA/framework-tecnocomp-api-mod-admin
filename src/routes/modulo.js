@@ -32,7 +32,7 @@ router.post('/modulo', async (req, res) => {
       }));
     }));
 
-    res.status(201).json(modulo);
+    res.status(201).json(modulo,topicos); //Adicionei pra retornar os topicos criados no json
   } catch (error) {
     console.log(error)
     res.status(400).json({ error: error.message });
