@@ -16,7 +16,7 @@ const Referencias = sequelize.define('Referencias', {
     },
   },
   caminhoDaImagem: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   referencia: {
     type: DataTypes.TEXT,
