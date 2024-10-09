@@ -16,14 +16,14 @@ const Topico = sequelize.define('Topico', {
     },
   },
   nome_topico: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   ebookUrlGeral: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   textoApoio: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
 }, {
   tableName: 'Topicos',

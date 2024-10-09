@@ -16,7 +16,7 @@ const VideoUrls = sequelize.define('VideoUrls', {
     },
   },
   url: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
 }, {
   tableName: 'videoUrls',

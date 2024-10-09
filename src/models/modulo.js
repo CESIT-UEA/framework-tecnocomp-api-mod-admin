@@ -12,7 +12,7 @@ const Modulo = sequelize.define('Modulo', {
     allowNull: false,
   },
   video_inicial: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   nativo: {
     type: DataTypes.BOOLEAN,
