@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -14,11 +15,14 @@ const app = express();
 const PORT = 8001;
 const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
 
-// Configuração SSL
-const sslOptions = {
-  key: fs.readFileSync('/certs/uea.edu.br.key'),
-  cert: fs.readFileSync('/certs/uea.edu.br.fullchain.crt')
-};
+let sslOptions;
+
+if (process.env.PRODUCAO_VARIAVEL == 'true') {
+  sslOptions = {
+    key: fs.readFileSync("/certs/uea.edu.br.key"),
+    cert: fs.readFileSync("/certs/uea.edu.br.fullchain.crt"),
+  };
+}
 
 app.use(express.json());
 app.use(cors());
@@ -43,10 +47,17 @@ const setup = async () => {
     });
     console.log('Administrador padrão criado com sucesso.');
   }
+  if(process.env.PRODUCAO_VARIAVEL == 'true'){
+    https.createServer(sslOptions, app).listen(PORT, () => {
+      console.log(`Servidor rodando em https://172.25.1.5:${PORT}`);
+    });
+  }else{
+    app.listen(3001, () => {
+      //Comentario
+      console.log(`Example app listening on port 4001`)
+    })
+  }
 
-  https.createServer(sslOptions, app).listen(PORT, () => {
-    console.log(`Servidor rodando em https://172.25.1.5:${PORT}`);
-  });
 };
 
 setup();

@@ -2,78 +2,114 @@ const express = require('express');
 const { Modulo, Topico, VideoUrls, SaibaMais, Referencias, Exercicios, Alternativas } = require('../models');
 const router = express.Router();
 
+// Função utilitária para validar se uma string é nula ou vazia
+function isNullOrEmpty(value) {
+  return value == null || value.trim() === '';
+}
+
+// Validação dos videoUrls
+function validarVideoUrls(topico, erros) {
+  topico.videoUrls.forEach(videoUrl => {
+    if (isNullOrEmpty(videoUrl.url)) {
+      erros.push(`Erro no videoUrls do tópico ${topico.titulo || 'sem título'}: URL ausente`);
+    }
+  });
+}
+
+// Validação do saibaMais
+function validarSaibaMais(topico, erros) {
+  topico.saibaMais.forEach(saibaMais => {
+    if (isNullOrEmpty(saibaMais.url)) {
+      erros.push(`Erro no Saiba mais do tópico ${topico.titulo || 'sem título'}: URL ausente`);
+    }
+    if (isNullOrEmpty(saibaMais.descricao)) {
+      erros.push(`Erro no Saiba mais do tópico ${topico.titulo || 'sem título'}: Descrição ausente`);
+    }
+  });
+}
+
+// Validação das referencias
+function validarReferencias(topico, erros) {
+  topico.referencias.forEach(referencia => {
+    if (isNullOrEmpty(referencia.caminhoDaImagem)) {
+      erros.push(`Erro nas referências do tópico ${topico.titulo || 'sem título'}: Caminho da imagem ausente`);
+    }
+    if (isNullOrEmpty(referencia.referencia)) {
+      erros.push(`Erro nas referências do tópico ${topico.titulo || 'sem título'}: Referência ausente`);
+    }
+  });
+}
+
+// Validação dos exercícios e alternativas
+function validarExercicios(topico, erros) {
+  topico.exercicios.forEach(exercicio => {
+    if (isNullOrEmpty(exercicio.questao)) {
+      erros.push(`Erro no exercício do tópico ${topico.titulo || 'sem título'}: Questão ausente`);
+    }
+
+    exercicio.alternativas.forEach(alternativa => {
+      if (isNullOrEmpty(alternativa.descricao)) {
+        erros.push(`Erro nas alternativas do exercício do tópico ${topico.titulo || 'sem título'}: Descrição ausente`);
+      }
+      if (isNullOrEmpty(alternativa.explicacao)) {
+        erros.push(`Erro nas alternativas do exercício do tópico ${topico.titulo || 'sem título'}: Explicação ausente`);
+      }
+      if (alternativa.correta == null) {
+        erros.push(`Erro nas alternativas do exercício do tópico ${topico.titulo || 'sem título'}: Correção ausente`);
+      }
+    });
+  });
+}
+
+// Validação geral dos tópicos
+function validarTopicos(topicos, erros) {
+  topicos.forEach(topico => {
+    validarVideoUrls(topico, erros);
+    validarSaibaMais(topico, erros);
+    validarReferencias(topico, erros);
+    validarExercicios(topico, erros);
+  });
+}
+
 router.post('/modulo', async (req, res) => {
   try {
     const { nome_modulo, video_inicial, plataforma_id, topicos } = req.body;
-    usuario_id = req.body.usuario_id
+    const usuario_id = req.body.usuario_id;
 
-    console.log(topicos)
-    console.log("Inicio das verificações");
-    
-    if (topicos) {
-      topicos.forEach(topico => {
-        topico.videoUrls.forEach(videoUrls => {
-          if (videoUrls.url == null || videoUrls.url == '') {
-            res.status(400).json("Erro no videoUrls")
-          }
-        })
+    console.log("Início das verificações dos tópicos");
 
-        topico.saibaMais.forEach(saibaMais => {
-          if (saibaMais.url == null || saibaMais.url == '') {
-            res.status(400).json("Erro no Saiba mais")
-          }
-          if (saibaMais.descricao == null || saibaMais.descricao == '') {
-            res.status(400).json("Erro no Saiba mais")
-          }
-        })
+    let erros = [];
 
-        topico.videoUrls.referencias(referencias => {
-          if (referencias.caminhoDaImagem == null || referencias.caminhoDaImagem == '') {
-            res.status(400).json("Erro nas referencias")
-          }
-          if (referencias.referencia == null || referencias.referencia == '') {
-            res.status(400).json("Erro nas referencias")
-          }
-        })
+    if (topicos && Array.isArray(topicos)) {
+      validarTopicos(topicos, erros);
 
-        topico.exercicios.forEach(exercicios => {
-          if (exercicios.questao == null || exercicios.questao == '') {
-            res.status(400).json("Erro no exercicios")
-          }
-
-          exercicio.alternativas.forEach(alternativas => {
-            if (alternativas.descricao == null || alternativas.descricao == '') {
-              res.status(400).json("Erro nas alternativas")
-            }
-
-            if (alternativas.explicacao == null || alternativas.explicacao == '') {
-              res.status(400).json("Erro nas alternativas")
-            }
-            if (alternativas.correta == null) {
-              res.status(400).json("Erro nas alternativas")
-            }
-          })
-        })
-      });
+      // Se houver erros, retornar todos de uma vez
+      if (erros.length > 0) {
+        return res.status(400).json({ erros });
+      }
+    } else {
+      return res.status(400).json({ error: 'Nenhum tópico foi enviado ou o formato está incorreto' });
     }
 
-    const modulo = await Modulo.create({ nome_modulo, video_inicial, plataforma_id,usuario_id});
+    // Criação do módulo
+    const modulo = await Modulo.create({ nome_modulo, video_inicial, plataforma_id, usuario_id });
 
+    // Criação de tópicos e seus relacionamentos
     await Promise.all(topicos.map(async (topico) => {
       const novoTopico = await Topico.create({ ...topico, id_modulo: modulo.id });
-      
+
       await Promise.all(topico.videoUrls.map(async (url) => {
         await VideoUrls.create({ id_topico: novoTopico.id, url });
       }));
-      
+
       await Promise.all(topico.saibaMais.map(async (sm) => {
         await SaibaMais.create({ id_topico: novoTopico.id, descricao: sm.descricao, url: sm.url });
       }));
-      
+
       await Promise.all(topico.referencias.map(async (ref) => {
         await Referencias.create({ id_topico: novoTopico.id, caminhoDaImagem: ref.caminhoDaImagem, referencia: ref.referencia });
       }));
-      
+
       await Promise.all(topico.exercicios.map(async (exercicio) => {
         const novoExercicio = await Exercicios.create({ id_topico: novoTopico.id, questao: exercicio.questao });
 
@@ -83,9 +119,9 @@ router.post('/modulo', async (req, res) => {
       }));
     }));
 
-    res.status(201).json({ modulo, topicos }); //Adicionei pra retornar os topicos criados no json
+    res.status(201).json({ modulo, topicos });
   } catch (error) {
-    console.log(error)
+    console.error(error);
     res.status(400).json({ error: error.message });
   }
 });
