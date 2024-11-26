@@ -7,8 +7,16 @@ const Modulo = sequelize.define('Modulo', {
     autoIncrement: true,
     primaryKey: true,
   },
+  nome_url: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  ebookUrlGeral: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
   nome_modulo: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   video_inicial: {
