@@ -10,7 +10,7 @@ function isNullOrEmpty(value) {
 // Validação dos videoUrls
 function validarVideoUrls(topico, erros) {
   topico.videoUrls.forEach(videoUrl => {
-    print(videoUrl)
+    console.log(videoUrl)
     if (isNullOrEmpty(videoUrl.url)) {
       erros.push(`Erro no videoUrls do tópico ${topico.titulo || 'sem título'}: URL ausente`);
     }
