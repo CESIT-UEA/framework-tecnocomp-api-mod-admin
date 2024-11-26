@@ -75,7 +75,7 @@ router.post('/modulo', async (req, res) => {
   try {
     const { nome_modulo, video_inicial, plataforma_id, topicos , ebookUrlGeral , nome_url} = req.body;
     const usuario_id = req.body.usuario_id;
-    console.log(body)
+    console.log(req.body)
     console.log("Início das verificações dos tópicos");
 
     let erros = [];
