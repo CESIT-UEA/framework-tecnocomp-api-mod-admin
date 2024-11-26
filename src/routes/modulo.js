@@ -73,7 +73,7 @@ function validarTopicos(topicos, erros) {
 
 router.post('/modulo', async (req, res) => {
   try {
-    const { nome_modulo, video_inicial, plataforma_id, topicos } = req.body;
+    const { nome_modulo, video_inicial, plataforma_id, topicos , ebookUrlGeral , nome_url} = req.body;
     const usuario_id = req.body.usuario_id;
 
     console.log("Início das verificações dos tópicos");
@@ -92,7 +92,7 @@ router.post('/modulo', async (req, res) => {
     }
 
     // Criação do módulo
-    const modulo = await Modulo.create({ nome_modulo, video_inicial, plataforma_id, usuario_id });
+    const modulo = await Modulo.create({nome_url, nome_modulo,ebookUrlGeral, video_inicial, plataforma_id, usuario_id });
 
     // Criação de tópicos e seus relacionamentos
     await Promise.all(topicos.map(async (topico) => {
