@@ -10,6 +10,7 @@ function isNullOrEmpty(value) {
 // Validação dos videoUrls
 function validarVideoUrls(topico, erros) {
   topico.videoUrls.forEach(videoUrl => {
+    print(videoUrl)
     if (isNullOrEmpty(videoUrl.url)) {
       erros.push(`Erro no videoUrls do tópico ${topico.titulo || 'sem título'}: URL ausente`);
     }
@@ -82,6 +83,7 @@ router.post('/modulo', async (req, res) => {
 
     if (topicos && Array.isArray(topicos)) {
       validarTopicos(topicos, erros);
+      
 
       // Se houver erros, retornar todos de uma vez
       if (erros.length > 0) {
