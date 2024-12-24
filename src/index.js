@@ -25,7 +25,12 @@ if (process.env.PRODUCAO_VARIAVEL == 'true') {
 }
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
 
 // Rotas
 app.use('/auth', authRoutes);
@@ -53,8 +58,7 @@ const setup = async () => {
     });
   }else{
     app.listen(3001, () => {
-      //Comentario
-      console.log(`Example app listening on port 4001`)
+      console.log(`Abrindo na porta 3001`)
     })
   }
 
