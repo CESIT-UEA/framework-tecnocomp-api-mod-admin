@@ -10,6 +10,7 @@ const { Usuario } = require('./models');
 const authRoutes = require('./routes/auth');
 const plataformaRoutes = require('./routes/plataforma');
 const moduloRoutes = require('./routes/modulo');
+const usersRoutes = require('./routes/users');
 
 const app = express();
 const PORT = 8001;
@@ -36,6 +37,7 @@ app.use(
 app.use('/auth', authRoutes);
 app.use('/api', plataformaRoutes);
 app.use('/api', moduloRoutes);
+app.use('/api', usersRoutes);
 
 // Inicializa o servidor e cria um administrador padrão se não existir
 const setup = async () => {
