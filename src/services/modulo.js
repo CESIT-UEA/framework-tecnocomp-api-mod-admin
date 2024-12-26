@@ -1,5 +1,7 @@
-const { Modulo, Usuario, Topico} = require("../models");
+const { Modulo, Topico, VideoUrls, SaibaMais, Referencias, Exercicios, Alternativas } = require('../models');
+
 const bcrypt = require("bcrypt");
+const topicoService = require("../services/topico");
 
 async function criarModulo({ nome_modulo, video_inicial, plataforma_id, ebookUrlGeral, nome_url, usuario_id }) {
   try {
@@ -44,7 +46,7 @@ async function atualizarModulo(id, dadosAtualizados) {
   try {
     const modulo = await Modulo.findByPk(id);
     if (!modulo) {
-      return null; // Caso o módulo não seja encontrado
+      return null; 
     }
 
     await modulo.update(dadosAtualizados);
@@ -61,11 +63,16 @@ async function deletarModulo(idAdm, senhaAdm, idExcluir) {
     if (!admin || !(await bcrypt.compare(senhaAdm, admin.senha))) {
       return false;
     }
-    const modulo = await obterModuloPorId(idExcluir);
+
+    const modulo = await Modulo.findByPk(idExcluir, {
+      include: [{ model: Topico, as: 'Topicos' }],
+    });
+
     if (!modulo) {
-      return false;
+      return false; // Módulo não encontrado
     }
 
+    // Exclui o módulo e os tópicos relacionados em cascata
     await modulo.destroy();
     return true;
   } catch (error) {
@@ -74,18 +81,51 @@ async function deletarModulo(idAdm, senhaAdm, idExcluir) {
   }
 }
 
-async function obterTopicosPorModulo(moduloId) {
+async function atualizarStatusPublicacao(id, publicar) {
   try {
-    // Busca o módulo e seus tópicos relacionados
-    const topicos = await Topico.findAll({
-      where: { id_modulo: moduloId },
-    });
-    return topicos;
+    const modulo = await Modulo.findByPk(id);
+
+    if (!modulo) {
+      return null; // Retorna null se o módulo não for encontrado
+    }
+
+    modulo.publicado = publicar; // Atualiza o status
+    await modulo.save();
+
+    return modulo; // Retorna o módulo atualizado
   } catch (error) {
-    console.error("Erro ao buscar tópicos do módulo:", error);
-    throw new Error("Erro ao buscar tópicos do módulo");
+    console.error('Erro ao atualizar status de publicação:', error);
+    throw new Error('Erro ao atualizar status de publicação');
   }
 }
+
+async function obterModuloPorIdESeusTopicos(id) {
+  try {
+    const modulo = await Modulo.findByPk(id, {
+      include: [
+        {
+          model: Topico,
+          include: [
+            { model: VideoUrls, as: "VideoUrls" },
+            { model: SaibaMais, as: "SaibaMais" },
+            { model: Referencias, as: "Referencias" },
+            {
+              model: Exercicios,
+              as: "Exercicios",
+              include: [{ model: Alternativas, as: "Alternativas" }],
+            },
+          ],
+        },
+      ],
+    });
+
+    return modulo;
+  } catch (error) {
+    console.error("Erro ao buscar módulo por ID:", error);
+    throw new Error("Erro ao buscar módulo por ID");
+  }
+}
+
 
 module.exports = {
   criarModulo,
@@ -93,5 +133,6 @@ module.exports = {
   obterModuloPorId,
   atualizarModulo,
   deletarModulo,
-  obterTopicosPorModulo,
+  atualizarStatusPublicacao,
+  obterModuloPorIdESeusTopicos
 };

@@ -18,4 +18,20 @@ router.get('/topicos/:id', async (req, res) => {
   }
 });
 
+router.post('/topicos', async (req, res) => {
+  try {
+    const dadosTopico = req.body;
+
+    if (!dadosTopico.id_modulo || !dadosTopico.nome_topico) {
+      return res.status(400).json({ error: 'Campos obrigatórios estão ausentes' });
+    }
+    const novoTopico = await topicoService.criarTopico(dadosTopico);
+    console.log(dadosTopico)
+    res.status(201).json(novoTopico);
+  } catch (error) {
+    console.error('Erro ao criar tópico:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = router;

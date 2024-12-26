@@ -1,5 +1,6 @@
 const express = require("express");
 const moduloService = require("../services/modulo");
+const topicoService = require("../services/topico");
 const router = express.Router();
 
 router.post("/modulo", async (req, res) => {
@@ -33,20 +34,6 @@ router.get("/modulos", async (req, res) => {
   }
 });
 
-router.get("/modulos/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const modulo = await moduloService.obterModuloPorId(id);
-    if (!modulo) {
-      return res.status(404).json({ error: "Módulo não encontrado" });
-    }
-    res.status(200).json(modulo);
-  } catch (error) {
-    console.error("Erro ao buscar módulo:", error);
-    res.status(500).json({ error: "Erro ao buscar módulo" });
-  }
-});
-
 router.put("/modulos/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -75,6 +62,44 @@ router.delete("/modulos/:id", async (req, res) => {
   } catch (error) {
     console.error("Erro ao deletar módulo:", error);
     res.status(500).json({ error: "Erro ao deletar módulo" });
+  }
+});
+
+router.patch('/modulos/:id/publicar', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { publicar } = req.body;
+
+    if (publicar === undefined) {
+      return res.status(400).json({ error: 'O campo "publicar" é obrigatório' });
+    }
+
+    const moduloAtualizado = await moduloService.atualizarStatusPublicacao(id, publicar);
+
+    if (!moduloAtualizado) {
+      return res.status(404).json({ error: 'Módulo não encontrado' });
+    }
+
+    res.status(200).json(moduloAtualizado);
+  } catch (error) {
+    console.error('Erro ao alterar status de publicação:', error);
+    res.status(500).json({ error: 'Erro ao alterar status de publicação' });
+  }
+});
+
+router.get("/modulo/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("ID recebido na rota:", id); // Log para verificar o ID recebido
+    const modulo = await moduloService.obterModuloPorIdESeusTopicos(id);
+    if (!modulo) {
+      return res.status(404).json({ error: "Módulo não encontrado" });
+    }
+    console.log("Módulo encontrado:", modulo); // Log para verificar o retorno
+    res.status(200).json(modulo);
+  } catch (error) {
+    console.error("Erro ao buscar módulo:", error);
+    res.status(500).json({ error: "Erro ao buscar módulo" });
   }
 });
 
