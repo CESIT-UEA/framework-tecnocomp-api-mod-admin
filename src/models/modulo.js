@@ -26,6 +26,10 @@ const Modulo = sequelize.define('Modulo', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  publicado: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   usuario_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
