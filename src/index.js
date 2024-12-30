@@ -49,8 +49,8 @@ const setup = async () => {
   if (!adminExists) {
     const hashedPassword = await bcrypt.hash('admin123', 10); // Senha padrão, mude para algo seguro
     await Usuario.create({
-      username: 'Administrador',
-      email: 'admin@admin.com',
+      username: 'Adm',
+      email: 'adm@admin.com',
       senha: hashedPassword,
       tipo: 'adm'
     });
