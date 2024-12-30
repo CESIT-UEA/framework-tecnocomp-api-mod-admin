@@ -25,20 +25,14 @@ Modulo.belongsTo(PlataformaRegistro, { foreignKey: 'plataforma_id' });
 Modulo.hasMany(Topico, { foreignKey: 'id_modulo', onDelete: 'CASCADE' });
 Topico.belongsTo(Modulo, { foreignKey: 'id_modulo' });
 
-Topico.hasMany(VideoUrls, { foreignKey: 'id_topico', onDelete: 'CASCADE' });
-VideoUrls.belongsTo(Topico, { foreignKey: 'id_topico' });
+Topico.hasMany(VideoUrls, { foreignKey: 'id_topico', as: 'VideoUrls', onDelete: 'CASCADE' });
+Topico.hasMany(SaibaMais, { foreignKey: 'id_topico', as: 'SaibaMais', onDelete: 'CASCADE' });
+Topico.hasMany(Referencias, { foreignKey: 'id_topico', as: 'Referencias', onDelete: 'CASCADE' });
+Topico.hasMany(Exercicios, { foreignKey: 'id_topico', as: 'Exercicios', onDelete: 'CASCADE' });
 
-Topico.hasMany(SaibaMais, { foreignKey: 'id_topico', onDelete: 'CASCADE' });
-SaibaMais.belongsTo(Topico, { foreignKey: 'id_topico' });
+Exercicios.hasMany(Alternativas, { foreignKey: 'id_exercicio', as: 'Alternativas', onDelete: 'CASCADE' });
 
-Topico.hasMany(Referencias, { foreignKey: 'id_topico', onDelete: 'CASCADE' });
-Referencias.belongsTo(Topico, { foreignKey: 'id_topico' });
 
-Topico.hasMany(Exercicios, { foreignKey: 'id_topico', onDelete: 'CASCADE' });
-Exercicios.belongsTo(Topico, { foreignKey: 'id_topico' });
-
-Exercicios.hasMany(Alternativas, { foreignKey: 'id_exercicio', onDelete: 'CASCADE' });
-Alternativas.belongsTo(Exercicios, { foreignKey: 'id_exercicio' });
 
 Aluno.hasMany(UsuarioModulo, { foreignKey: 'ltiUserId' });
 UsuarioModulo.belongsTo(Aluno, { foreignKey: 'ltiUserId' });
