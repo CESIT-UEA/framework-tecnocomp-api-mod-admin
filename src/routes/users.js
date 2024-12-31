@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const userService = require("../services/usuario");
+const authMiddleware = require('../middleware/auth');
 
-router.get("/listar-usuarios", async (req, res) => {
+router.get("/listar-usuarios",authMiddleware, async (req, res) => {
   try {
     const users = await userService.getDadosUser();
     res.status(200).json({ users });
@@ -12,7 +13,7 @@ router.get("/listar-usuarios", async (req, res) => {
   }
 });
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id",authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getDadosUserById(id);
@@ -26,7 +27,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-router.put("/users/:id", async (req, res) => {
+router.put("/users/:id",authMiddleware, async (req, res) => {
   try {
     const { idAdm, senhaAdm, username, email, tipo } = req.body;
     const idEditar = req.params.id;
@@ -43,7 +44,7 @@ router.put("/users/:id", async (req, res) => {
   }
 });
 
-router.delete("/users", async (req, res) => {
+router.delete("/users",authMiddleware, async (req, res) => {
   try {
     const { idAdm, senhaAdm, idExcluir } = req.body;
     const result = await userService.deleteUser(idAdm, senhaAdm, idExcluir);

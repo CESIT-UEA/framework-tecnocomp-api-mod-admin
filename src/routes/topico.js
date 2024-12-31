@@ -1,8 +1,9 @@
 const express = require('express');
 const topicoService = require('../services/topico');
 const router = express.Router();
+const authMiddleware = require('../middleware/auth');
 
-router.get('/topicos/:id', async (req, res) => {
+router.get('/topicos/:id',authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -18,7 +19,7 @@ router.get('/topicos/:id', async (req, res) => {
   }
 });
 
-router.post('/topicos', async (req, res) => {
+router.post('/topicos',authMiddleware, async (req, res) => {
   try {
     const dadosTopico = req.body;
 
@@ -35,7 +36,7 @@ router.post('/topicos', async (req, res) => {
 });
 
 // Editar tópico
-router.put('/topico/:id', async (req, res) => {
+router.put('/topico/:id',authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const dadosAtualizados = req.body;
@@ -49,7 +50,7 @@ router.put('/topico/:id', async (req, res) => {
 });
 
 // Excluir tópico
-router.delete('/topico/:id', async (req, res) => {
+router.delete('/topico/:id',authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { idAdm, senhaAdm } = req.query;
@@ -63,7 +64,7 @@ router.delete('/topico/:id', async (req, res) => {
   }
 });
 
-router.get('/topico/:id', async (req, res) => {
+router.get('/topico/:id',authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const topico = await topicoService.obterTopicoPorId(id);

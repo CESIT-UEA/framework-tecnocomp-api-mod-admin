@@ -2,8 +2,9 @@ const express = require("express");
 const moduloService = require("../services/modulo");
 const topicoService = require("../services/topico");
 const router = express.Router();
+const authMiddleware = require('../middleware/auth');
 
-router.post("/modulo", async (req, res) => {
+router.post("/modulo",authMiddleware, async (req, res) => {
   try {
     const { nome_modulo, video_inicial, plataforma_id, ebookUrlGeral, nome_url, usuario_id } = req.body;
 
@@ -24,7 +25,7 @@ router.post("/modulo", async (req, res) => {
 });
 
 // Listar todos os módulos
-router.get("/modulos", async (req, res) => {
+router.get("/modulos",authMiddleware, async (req, res) => {
   try {
     const modulos = await moduloService.listarModulos();
     res.status(200).json(modulos);
@@ -34,7 +35,7 @@ router.get("/modulos", async (req, res) => {
   }
 });
 
-router.put("/modulos/:id", async (req, res) => {
+router.put("/modulos/:id",authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const dadosAtualizados = req.body;
@@ -49,7 +50,7 @@ router.put("/modulos/:id", async (req, res) => {
   }
 });
 
-router.delete("/modulos/:id", async (req, res) => {
+router.delete("/modulos/:id",authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
     const { idAdm, senhaAdm } = req.query
@@ -65,7 +66,7 @@ router.delete("/modulos/:id", async (req, res) => {
   }
 });
 
-router.patch('/modulos/:id/publicar', async (req, res) => {
+router.patch('/modulos/:id/publicar',authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { publicar } = req.body;
@@ -87,7 +88,7 @@ router.patch('/modulos/:id/publicar', async (req, res) => {
   }
 });
 
-router.get("/modulo/:id", async (req, res) => {
+router.get("/modulo/:id",authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     console.log("ID recebido na rota:", id); // Log para verificar o ID recebido

@@ -22,7 +22,7 @@ router.post('/plataforma', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/plataforma', async (req, res) => {
+router.get('/plataforma',authMiddleware, async (req, res) => {
   try {
     const plataformas = await PlataformaRegistro.findAll();
     res.json(plataformas);

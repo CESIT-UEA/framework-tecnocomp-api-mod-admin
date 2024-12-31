@@ -116,7 +116,7 @@ function validarTopicos(topicos, erros) {
   });
 }
 
-router.post("/modulo", async (req, res) => {
+router.post("/modulo",authMiddleware, async (req, res) => {
   try {
     const {
       nome_modulo,

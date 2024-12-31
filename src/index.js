@@ -45,7 +45,7 @@ app.use('/api', topicoRoutes);
 const setup = async () => {
   await sequelize.sync();
 
-  const adminExists = await Usuario.findOne({ where: { tipo: 'professor' } });
+  const adminExists = await Usuario.findOne({ where: { tipo: 'adm' } });
   if (!adminExists) {
     const hashedPassword = await bcrypt.hash('admin123', 10); // Senha padrão, mude para algo seguro
     await Usuario.create({
