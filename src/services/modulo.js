@@ -1,4 +1,4 @@
-const { Modulo, Topico, VideoUrls, SaibaMais, Referencias, Exercicios, Alternativas } = require('../models');
+const { Modulo, Topico, VideoUrls, SaibaMais, Referencias, Exercicios, Alternativas, Usuario } = require('../models');
 
 const bcrypt = require("bcrypt");
 const topicoService = require("../services/topico");

@@ -53,7 +53,7 @@ router.put("/modulos/:id",authMiddleware, async (req, res) => {
 router.delete("/modulos/:id",authMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const { idAdm, senhaAdm } = req.query
+    const { idAdm, senhaAdm } = req.query 
 
     const deletado = await moduloService.deletarModulo(idAdm, senhaAdm, id);
     if (!deletado) {
