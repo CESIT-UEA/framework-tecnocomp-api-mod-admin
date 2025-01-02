@@ -60,4 +60,24 @@ router.delete("/users",authMiddleware, async (req, res) => {
   }
 });
 
+router.patch('/users/:id/self', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { senhaAtual, novaSenha, username, email } = req.body;
+
+    const resultado = await userService.atualizarPerfil(id, { senhaAtual, novaSenha, username, email });
+
+    console.log(resultado)
+    if (!resultado.sucesso) {
+      return res.status(401).json({ error: "Senha incorreta ou Não Autorizado" });
+    }
+
+    res.json({ message: resultado.mensagem });
+  } catch (error) {
+    console.error('Erro ao atualizar perfil:', error);
+    res.status(500).json({ error: 'Erro ao atualizar perfil.' });
+  }
+});
+
+
 module.exports = router;

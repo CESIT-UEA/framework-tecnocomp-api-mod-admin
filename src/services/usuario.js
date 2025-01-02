@@ -64,4 +64,30 @@ async function deleteUser(idAdm, senhaAdm, idExcluir) {
   }
 }
 
-module.exports = { getDadosUser, getDadosUserById, updateUser, deleteUser };
+async function atualizarPerfil(id, { senhaAtual, novaSenha, username, email }) {
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) {
+      return { sucesso: false, status: 404, mensagem: 'Usuário não encontrado.' };
+    }
+
+    const senhaValida = await bcrypt.compare(senhaAtual, usuario.senha);
+    if (!senhaValida) {
+      return { sucesso: false, status: 401, mensagem: 'Senha atual incorreta.' };
+    }
+
+    // Atualiza os campos fornecidos
+    if (username) usuario.username = username;
+    if (email) usuario.email = email;
+    if (novaSenha) usuario.senha = await bcrypt.hash(novaSenha, 10);
+
+    await usuario.save();
+
+    return { sucesso: true, status: 200, mensagem: 'Perfil atualizado com sucesso.' };
+  } catch (error) {
+    console.error('Erro ao atualizar perfil no serviço:', error);
+    return { sucesso: false, status: 500, mensagem: 'Erro ao atualizar perfil.' };
+  }
+}
+
+module.exports = { getDadosUser, getDadosUserById, updateUser, deleteUser,atualizarPerfil };

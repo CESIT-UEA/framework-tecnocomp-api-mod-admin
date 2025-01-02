@@ -66,4 +66,20 @@ router.delete('/plataforma/:id', authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/plataformas/usuario/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const modulos = await plataformaService.obterPlataformasPorUsuario(id);
+
+    if (!modulos || modulos.length === 0) {
+      return res.status(404).json({ message: "Nenhum módulo encontrado para este usuário." });
+    }
+
+    res.status(200).json(modulos);
+  } catch (error) {
+    console.error("Erro ao obter módulos por usuário:", error);
+    res.status(500).json({ error: "Erro ao obter módulos por usuário." });
+  }
+});
+
 module.exports = router;

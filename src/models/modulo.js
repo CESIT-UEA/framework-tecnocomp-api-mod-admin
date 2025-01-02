@@ -30,6 +30,10 @@ const Modulo = sequelize.define('Modulo', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  template: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   usuario_id: {
     type: DataTypes.INTEGER,
     allowNull: false,

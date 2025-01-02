@@ -32,6 +32,20 @@ async function listarModulos() {
   }
 }
 
+async function obterModulosPorUsuario(usuarioId) {
+  try {
+    const modulos = await Modulo.findAll({
+      where: { usuario_id: usuarioId },
+    });
+
+    return modulos;
+  } catch (error) {
+    console.error("Erro ao obter módulos por usuário:", error);
+    throw new Error("Erro ao obter módulos por usuário.");
+  }
+}
+
+
 async function obterModuloPorId(id) {
   try {
     const modulo = await Modulo.findByPk(id);
@@ -134,5 +148,6 @@ module.exports = {
   atualizarModulo,
   deletarModulo,
   atualizarStatusPublicacao,
-  obterModuloPorIdESeusTopicos
+  obterModuloPorIdESeusTopicos,
+  obterModulosPorUsuario
 };

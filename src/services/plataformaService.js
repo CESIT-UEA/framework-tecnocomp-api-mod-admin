@@ -42,6 +42,19 @@ async function obterPlataformaPorId(id) {
   }
 }
 
+async function obterPlataformasPorUsuario(usuarioId) {
+  try {
+    const plataformas = await PlataformaRegistro.findAll({
+      where: { usuario_id: usuarioId },
+    });
+
+    return plataformas;
+  } catch (error) {
+    console.error("Erro ao obter plataformas por usuário:", error);
+    throw new Error("Erro ao obter plataformas por usuário.");
+  }
+}
+
 async function atualizarPlataforma(id, dadosAtualizados) {
   try {
     const plataforma = await PlataformaRegistro.findByPk(id);
@@ -83,4 +96,5 @@ module.exports = {
   obterPlataformaPorId,
   atualizarPlataforma,
   deletarPlataforma,
+  obterPlataformasPorUsuario
 };
