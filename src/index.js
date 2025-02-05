@@ -22,9 +22,9 @@ let sslOptions;
 
 if (process.env.PRODUCAO_VARIAVEL == 'true') {
   sslOptions = {
-    key: fs.readFileSync("/certs/privkey.pem"),
-    cert: fs.readFileSync("/certs/fullchain.pem"),
-  };
+    key: fs.readFileSync("/certs/uea.edu.br.key"),
+    cert: fs.readFileSync("/certs/uea.edu.br.fullchain.crt"),
+  }; 
 }
 
 app.use(express.json());
