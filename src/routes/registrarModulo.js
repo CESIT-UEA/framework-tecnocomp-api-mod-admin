@@ -6,12 +6,11 @@ const authMiddleware = require('../middleware/auth');
 
 router.post("/modulo",authMiddleware, async (req, res) => {
   try {
-    const { nome_modulo, video_inicial, plataforma_id, ebookUrlGeral, nome_url, usuario_id } = req.body;
+    const { nome_modulo, video_inicial, ebookUrlGeral, nome_url, usuario_id } = req.body;
 
     const modulo = await moduloService.criarModulo({
       nome_modulo,
       video_inicial,
-      plataforma_id,
       ebookUrlGeral,
       nome_url,
       usuario_id,
