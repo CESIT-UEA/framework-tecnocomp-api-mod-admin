@@ -19,9 +19,6 @@ PlataformaRegistro.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 Usuario.hasMany(Modulo, { foreignKey: 'usuario_id' });
 Modulo.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 
-PlataformaRegistro.hasMany(Modulo, { foreignKey: 'plataforma_id' });
-Modulo.belongsTo(PlataformaRegistro, { foreignKey: 'plataforma_id' });
-
 Modulo.hasMany(Topico, { foreignKey: 'id_modulo', onDelete: 'CASCADE' });
 Topico.belongsTo(Modulo, { foreignKey: 'id_modulo' });
 

@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db/connect');
 
-const Modulo = sequelize.define('Modulo', {
+const Modulo = sequelize.define('Modulo', 
+  {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -42,13 +43,9 @@ const Modulo = sequelize.define('Modulo', {
       key: 'id',
     },
   },
-  plataforma_id: {
-    type: DataTypes.INTEGER,
+  uuid: {
+    type: DataTypes.TEXT,
     allowNull: false,
-    references: {
-      model: 'PlataformaRegistro',
-      key: 'id',
-    },
   },
 }, {
   tableName: 'Modulos',

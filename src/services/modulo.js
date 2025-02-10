@@ -2,17 +2,19 @@ const { Modulo, Topico, VideoUrls, SaibaMais, Referencias, Exercicios, Alternati
 
 const bcrypt = require("bcrypt");
 const topicoService = require("../services/topico");
+const { randomUUID } = require("crypto");
 
-async function criarModulo({ nome_modulo, video_inicial, plataforma_id, ebookUrlGeral, nome_url, usuario_id }) {
+async function criarModulo({ nome_modulo, video_inicial, ebookUrlGeral, nome_url, usuario_id }) {
   try {
+    const uuid = randomUUID();
 
     const modulo = await Modulo.create({
       nome_url,
       nome_modulo,
       ebookUrlGeral,
       video_inicial,
-      plataforma_id,
       usuario_id,
+      uuid
     });
 
     return modulo;
