@@ -43,7 +43,6 @@ async function clonarTemplate(id, usuarioId) {
       nome_url: template.nome_url,
       ebookUrlGeral: template.ebookUrlGeral,
       video_inicial: template.video_inicial,
-      plataforma_id: template.plataforma_id,
       publicado: false,
       usuario_id: usuarioId,
       template: false,

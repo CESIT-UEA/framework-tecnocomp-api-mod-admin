@@ -121,7 +121,6 @@ router.post("/modulo",authMiddleware, async (req, res) => {
     const {
       nome_modulo,
       video_inicial,
-      plataforma_id,
       topicos,
       ebookUrlGeral,
       nome_url,
@@ -153,7 +152,6 @@ router.post("/modulo",authMiddleware, async (req, res) => {
       nome_modulo,
       ebookUrlGeral,
       video_inicial,
-      plataforma_id,
       usuario_id,
     });
 

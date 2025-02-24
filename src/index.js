@@ -13,7 +13,6 @@ const moduloRoutes = require('./routes/registrarModulo');
 const usersRoutes = require('./routes/users');
 const topicoRoutes = require('./routes/topico');
 const templateRoutes = require('./routes/templates');
-
 const app = express();
 const PORT = 8001;
 const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
