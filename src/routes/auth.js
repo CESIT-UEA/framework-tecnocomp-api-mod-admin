@@ -2,6 +2,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models');
+const { validarCadastroUser } = require('../utils/validarUsuario')
+const { enviarCodigoEmail } = require('../utils/validarEmail')
 
 const router = express.Router();
 const SECRET_KEY = 'your_secret_key'; // Chave secreta do Access Token
@@ -11,9 +13,16 @@ const REFRESH_SECRET_KEY = 'your_refresh_secret_key'; // Chave secreta do Refres
 router.post('/register', async (req, res) => {
   try {
     const { nome, email, senha, tipo } = req.body;
-    const hashedPassword = await bcrypt.hash(senha, 10);
-    const usuario = await Usuario.create({ username: nome, email, senha: hashedPassword, tipo });
-    res.status(201).json(usuario);
+    const isValid = validarCadastroUser(nome, email, senha)
+    if (isValid){
+      // await enviarCodigoEmail(email)
+      const hashedPassword = await bcrypt.hash(senha, 10);
+      const usuario = await Usuario.create({ username: nome, email, senha: hashedPassword, tipo });
+      res.status(201).json(usuario);
+    } else {
+      res.json({message: "Cadastro de usuário invalidado pelo back"})
+    }
+    
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
