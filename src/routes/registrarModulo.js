@@ -3,6 +3,19 @@ const moduloService = require("../services/modulo");
 const topicoService = require("../services/topico");
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "src/routes/uploads/"); 
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); 
+  },
+});
+
+const upload = multer({ storage: storage });
 
 router.post("/modulo",authMiddleware, async (req, res) => {
   try {
@@ -119,5 +132,27 @@ router.get("/modulos/usuario/:id", authMiddleware, async (req, res) => {
   }
 });
 
+router.post(
+  "/modulos/upload",
+  authMiddleware,
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      console.log("Arquivo recebido:", req.file);
+      res.status(200).json({
+        message: "Arquivo salvo com sucesso",
+        filePath: path.join(__dirname, "uploads", req.file.filename),
+        fileName: req.file.filename,
+      });
+    } catch (error) {
+      console.error("Erro ao salvar arquivo:", error);
+      res.status(500).json({ error: "Arquivo não foi salvo" });
+    }
+  }
+);
+
+router.get('/modulos/file/:name', (req, res) => {
+  res.sendFile(__dirname  +'/uploads/' + req.params.name);
+});
 
 module.exports = router;
