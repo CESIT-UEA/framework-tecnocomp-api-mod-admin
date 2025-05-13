@@ -14,7 +14,7 @@ const referenciasService = require("./referenciasService");
 const exerciciosService = require("./exerciciosService");
 const { validarTopico } = require("../utils/validarTopico");
 const bcrypt = require("bcrypt");
-
+ 
 async function obterTopicoCompletoPorModulo(idModulo) {
   try {
     return await Topico.findAll({
@@ -35,9 +35,9 @@ async function obterTopicoCompletoPorModulo(idModulo) {
     throw error;
   }
 }
-
+ 
 async function criarTopico(dadosTopico) {
-  const erros = validarTopico(dadosTopico);
+  const erros = validarTopico(dadosTopico); 
   if (erros.length > 0) {
     throw new Error(`Validação falhou: ${erros.join("; ")}`);
   }

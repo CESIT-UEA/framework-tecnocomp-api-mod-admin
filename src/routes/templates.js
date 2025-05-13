@@ -3,7 +3,20 @@ const templateService = require("../services/templates");
 const authMiddleware = require("../middleware/auth");
 const router = express.Router();
 
-// Listar templates
+/**
+ * @swagger
+ * /api/templates:
+ *   get:
+ *     summary: Lista todos os templates disponíveis
+ *     tags: [Template]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de templates retornada com sucesso
+ *       500:
+ *         description: Erro ao listar templates
+ */
 router.get("/templates", authMiddleware, async (req, res) => {
   try {
     const templates = await templateService.listarTemplates();
@@ -14,7 +27,28 @@ router.get("/templates", authMiddleware, async (req, res) => {
   }
 });
 
-// Visualizar detalhes de um template
+/**
+ * @swagger
+ * /api/templates/{id}:
+ *   get:
+ *     summary: Obtém os detalhes de um template pelo ID
+ *     tags: [Template]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Template encontrado
+ *       404:
+ *         description: Template não encontrado
+ *       500:
+ *         description: Erro ao buscar template
+ */
 router.get("/templates/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -31,11 +65,33 @@ router.get("/templates/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// Clonar template
+/**
+ * @swagger
+ * /api/templates/clonar/{id}:
+ *   post:
+ *     summary: Clona um template e cria um novo módulo associado ao usuário
+ *     tags: [Template]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Template clonado com sucesso
+ *       404:
+ *         description: Template não encontrado
+ *       500:
+ *         description: Erro ao clonar template
+ */
 router.post("/templates/clonar/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const usuarioId = req.usuario.id; // Obtém o ID do usuário autenticado
+    const usuarioId = req.userId;
+
     const novoModulo = await templateService.clonarTemplate(id, usuarioId);
 
     if (!novoModulo) {
@@ -49,16 +105,56 @@ router.post("/templates/clonar/:id", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/template/modulo/{id}:
+ *   patch:
+ *     summary: Atualiza o status de template de um módulo
+ *     tags: [Template]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - template
+ *             properties:
+ *               template:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Status de template atualizado com sucesso
+ *       400:
+ *         description: Campo "template" obrigatório
+ *       404:
+ *         description: Módulo não encontrado
+ *       500:
+ *         description: Erro ao atualizar status
+ */
 router.patch("/template/modulo/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { template } = req.body; // true ou false para definir o status
+    const { template } = req.body;
 
     if (template === undefined) {
-      return res.status(400).json({ error: 'O campo "template" é obrigatório' });
+      return res
+        .status(400)
+        .json({ error: 'O campo "template" é obrigatório' });
     }
 
-    const moduloAtualizado = await templateService.atualizarStatusTemplate(id, template);
+    const moduloAtualizado = await templateService.atualizarStatusTemplate(
+      id,
+      template
+    );
 
     if (!moduloAtualizado) {
       return res.status(404).json({ error: "Módulo não encontrado" });
@@ -70,6 +166,5 @@ router.patch("/template/modulo/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Erro ao atualizar status de template" });
   }
 });
-
 
 module.exports = router;
