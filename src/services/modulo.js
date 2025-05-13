@@ -6,7 +6,7 @@ const { randomUUID } = require("crypto");
 
 async function criarModulo({ nome_modulo, video_inicial, ebookUrlGeral, nome_url, usuario_id }) {
   try {
-    const uuid = randomUUID();
+    const uuid = randomUUID();  
 
     const modulo = await Modulo.create({
       nome_url,
