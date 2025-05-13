@@ -7,14 +7,14 @@ const {
   Exercicios,
   Alternativas,
 } = require("../models");
-const { sequelize } = require('../db/connect');
+const { sequelize } = require("../db/connect");
 const videoUrlsService = require("./videoUrlsService");
 const saibaMaisService = require("./saibaMaisService");
 const referenciasService = require("./referenciasService");
 const exerciciosService = require("./exerciciosService");
 const { validarTopico } = require("../utils/validarTopico");
 const bcrypt = require("bcrypt");
- 
+
 async function obterTopicoCompletoPorModulo(idModulo) {
   try {
     return await Topico.findAll({
@@ -35,9 +35,9 @@ async function obterTopicoCompletoPorModulo(idModulo) {
     throw error;
   }
 }
- 
+
 async function criarTopico(dadosTopico) {
-  const erros = validarTopico(dadosTopico); 
+  const erros = validarTopico(dadosTopico);
   if (erros.length > 0) {
     throw new Error(`Validação falhou: ${erros.join("; ")}`);
   }
@@ -138,8 +138,6 @@ async function excluirTopico(id, idAdm, senhaAdm) {
   }
 }
 
-
-
 async function editarTopico(id, dadosAtualizados) {
   const {
     nome_topico,
@@ -155,10 +153,14 @@ async function editarTopico(id, dadosAtualizados) {
     // Obter o tópico pelo ID e incluir os relacionamentos usando aliases
     const topico = await Topico.findByPk(id, {
       include: [
-        { model: VideoUrls, as: 'VideoUrls' },
-        { model: SaibaMais, as: 'SaibaMais' },
-        { model: Referencias, as: 'Referencias' },
-        { model: Exercicios, as: 'Exercicios', include: [{ model: Alternativas, as: 'Alternativas' }] },
+        { model: VideoUrls, as: "VideoUrls" },
+        { model: SaibaMais, as: "SaibaMais" },
+        { model: Referencias, as: "Referencias" },
+        {
+          model: Exercicios,
+          as: "Exercicios",
+          include: [{ model: Alternativas, as: "Alternativas" }],
+        },
       ],
     });
 
@@ -232,31 +234,87 @@ async function editarTopico(id, dadosAtualizados) {
   }
 }
 
-
-
 async function obterTopicoPorId(id) {
   try {
     const topico = await Topico.findByPk(id, {
       include: [
-        { model: VideoUrls, as: 'VideoUrls' },
-        { model: SaibaMais, as: 'SaibaMais' },
-        { model: Referencias, as: 'Referencias' },
+        { model: VideoUrls, as: "VideoUrls" },
+        { model: SaibaMais, as: "SaibaMais" },
+        { model: Referencias, as: "Referencias" },
         {
           model: Exercicios,
-          as: 'Exercicios',
-          include: [{ model: Alternativas, as: 'Alternativas' }],
+          as: "Exercicios",
+          include: [{ model: Alternativas, as: "Alternativas" }],
         },
       ],
     });
-    console.log(JSON.stringify(topico, null, 2)); // Para verificar a saída no console
+    console.log(JSON.stringify(topico, null, 2));
     if (!topico) {
-      throw new Error('Tópico não encontrado');
+      throw new Error("Tópico não encontrado");
     }
 
     return topico;
   } catch (error) {
-    console.error('Erro ao obter tópico:', error);
+    console.error("Erro ao obter tópico:", error);
     throw error;
+  }
+}
+
+async function clonarTopicoCompleto(topicoOriginal, idModuloNovo) {
+  try {
+    const novoTopico = await Topico.create({
+      nome_topico: topicoOriginal.nome_topico,
+      id_modulo: idModuloNovo,
+      ebookUrlGeral: topicoOriginal.ebookUrlGeral,
+      textoApoio: topicoOriginal.textoApoio,
+    });
+
+    if (topicoOriginal.VideoUrls?.length) {
+      const videoUrls = topicoOriginal.VideoUrls.map(v => ({ id_topico: novoTopico.id, url: v.url }));
+      await VideoUrls.bulkCreate(videoUrls);
+    }
+
+    if (topicoOriginal.SaibaMais?.length) {
+      const saibaMais = topicoOriginal.SaibaMais.map(s => ({
+        id_topico: novoTopico.id,
+        descricao: s.descricao,
+        url: s.url,
+      }));
+      await SaibaMais.bulkCreate(saibaMais);
+    }
+
+    if (topicoOriginal.Referencias?.length) {
+      const referencias = topicoOriginal.Referencias.map(r => ({
+        id_topico: novoTopico.id,
+        caminhoDaImagem: r.caminhoDaImagem,
+        referencia: r.referencia,
+      }));
+      await Referencias.bulkCreate(referencias);
+    }
+
+    if (topicoOriginal.Exercicios?.length) {
+      for (const exercicio of topicoOriginal.Exercicios) {
+        const novoExercicio = await Exercicios.create({
+          id_topico: novoTopico.id,
+          questao: exercicio.questao,
+        });
+
+        if (exercicio.Alternativas?.length) {
+          const alternativas = exercicio.Alternativas.map(a => ({
+            id_exercicio: novoExercicio.id,
+            descricao: a.descricao,
+            explicacao: a.explicacao,
+            correta: a.correta,
+          }));
+          await Alternativas.bulkCreate(alternativas);
+        }
+      }
+    }
+
+    return novoTopico;
+  } catch (error) {
+    console.error("Erro ao clonar tópico completo:", error);
+    throw new Error("Erro ao clonar tópico completo");
   }
 }
 
@@ -267,4 +325,5 @@ module.exports = {
   editarTopico,
   excluirTopico,
   obterTopicoPorId,
+  clonarTopicoCompleto
 };
