@@ -1,6 +1,6 @@
 const { Modulo, Topico } = require("../models");
 const { randomUUID } = require("crypto");
-const topicoService = require('../services/topico');
+const topicoService = require("../services/topico");
 
 async function listarTemplates() {
   try {
@@ -33,16 +33,15 @@ async function clonarTemplate(id, usuarioId) {
   try {
     const template = await Modulo.findOne({
       where: { id, template: true },
-      include: [{ model: Topico }],
     });
 
     if (!template) {
       return null;
     }
-    const topicos_original = await topicoService.obterTopicoPorId(id)
-    console.log(topicos_original)
-    const uuid = randomUUID();
 
+    const topicosOriginais = await topicoService.obterTopicoCompletoPorModulo(id);
+
+    const uuid = randomUUID();
     const novoModulo = await Modulo.create({
       nome_modulo: `${template.nome_modulo} - Cópia`,
       nome_url: template.nome_url,
@@ -54,17 +53,8 @@ async function clonarTemplate(id, usuarioId) {
       uuid,
     });
 
-    if (template.Topicos && template.Topicos.length) {
-      const topicosClonados = template.Topicos.map((topico) => {
-        console.log(topico)
-        const { id, createdAt, updatedAt, ...resto } = topico.dataValues;
-        return {
-          ...resto, 
-          modulo_id: novoModulo.id,
-        };
-      });
-
-      await Topico.bulkCreate(topicosClonados);
+    for (const topico of topicosOriginais) {
+      await topicoService.clonarTopicoCompleto(topico, novoModulo.id);
     }
 
     return novoModulo;
