@@ -1,4 +1,6 @@
 const { Modulo, Topico } = require("../models");
+const { randomUUID } = require("crypto");
+const topicoService = require('../services/topico');
 
 async function listarTemplates() {
   try {
@@ -35,8 +37,11 @@ async function clonarTemplate(id, usuarioId) {
     });
 
     if (!template) {
-      return null; // Template não encontrado
+      return null;
     }
+    const topicos_original = await topicoService.obterTopicoPorId(id)
+    console.log(topicos_original)
+    const uuid = randomUUID();
 
     const novoModulo = await Modulo.create({
       nome_modulo: `${template.nome_modulo} - Cópia`,
@@ -46,13 +51,19 @@ async function clonarTemplate(id, usuarioId) {
       publicado: false,
       usuario_id: usuarioId,
       template: false,
+      uuid,
     });
 
     if (template.Topicos && template.Topicos.length) {
-      const topicosClonados = template.Topicos.map((topico) => ({
-        ...topico.dataValues,
-        modulo_id: novoModulo.id,
-      }));
+      const topicosClonados = template.Topicos.map((topico) => {
+        console.log(topico)
+        const { id, createdAt, updatedAt, ...resto } = topico.dataValues;
+        return {
+          ...resto, 
+          modulo_id: novoModulo.id,
+        };
+      });
+
       await Topico.bulkCreate(topicosClonados);
     }
 
@@ -62,6 +73,7 @@ async function clonarTemplate(id, usuarioId) {
     throw new Error("Erro ao clonar template");
   }
 }
+
 
 async function atualizarStatusTemplate(id, template) {
   try {
@@ -85,5 +97,5 @@ module.exports = {
   listarTemplates,
   obterTemplatePorId,
   clonarTemplate,
-  atualizarStatusTemplate
+  atualizarStatusTemplate,
 };

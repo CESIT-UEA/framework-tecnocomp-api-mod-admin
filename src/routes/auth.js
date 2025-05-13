@@ -2,14 +2,46 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models');
-const { validarCadastroUser } = require('../utils/validarUsuario')
-const { enviarCodigoEmail } = require('../utils/validarEmail')
+const { validarCadastroUser } = require('../utils/validarUsuario');
+const { enviarCodigoEmail } = require('../utils/validarEmail');
 
 const router = express.Router();
-const SECRET_KEY = 'your_secret_key'; // Chave secreta do Access Token
-const REFRESH_SECRET_KEY = 'your_refresh_secret_key'; // Chave secreta do Refresh Token
+const SECRET_KEY = 'your_secret_key';
+const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
 
-// Registro
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Registra um novo usuário
+ *     tags:
+ *       - Autenticação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - email
+ *               - senha
+ *               - tipo
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               senha:
+ *                 type: string
+ *               tipo:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *       400:
+ *         description: Erro ao registrar usuário
+ */
 router.post('/register', async (req, res) => {
   try {
     const { nome, email, senha, tipo } = req.body;
@@ -22,13 +54,40 @@ router.post('/register', async (req, res) => {
     } else {
       res.json({message: "Cadastro de usuário invalidado pelo back"})
     }
-    
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Login
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Autentica um usuário e retorna tokens
+ *     tags:
+ *       - Autenticação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - senha
+ *             properties:
+ *               email:
+ *                 type: string
+ *               senha:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login realizado com sucesso
+ *       401:
+ *         description: Credenciais inválidas
+ *       404:
+ *         description: Usuário não encontrado
+ */
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -57,7 +116,32 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Rota para renovar Access Token
+/**
+ * @swagger
+ * /auth/refresh-token:
+ *   post:
+ *     summary: Gera um novo Access Token a partir do Refresh Token
+ *     tags:
+ *       - Autenticação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Novo token gerado com sucesso
+ *       401:
+ *         description: Refresh token inválido
+ *       403:
+ *         description: Token não fornecido
+ */
 router.post('/refresh-token', (req, res) => {
   const { refreshToken } = req.body;
 

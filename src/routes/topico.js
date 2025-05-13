@@ -3,7 +3,30 @@ const topicoService = require('../services/topico');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
 
-router.get('/topicos/:id',authMiddleware, async (req, res) => {
+/**
+ * @swagger
+ * /api/topicos/{id}:
+ *   get:
+ *     summary: Lista todos os tópicos de um módulo
+ *     tags: [Tópico]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID do módulo
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de tópicos do módulo
+ *       400:
+ *         description: ID obrigatório
+ *       500:
+ *         description: Erro ao buscar tópicos
+ */
+router.get('/topicos/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -19,7 +42,35 @@ router.get('/topicos/:id',authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/topicos',authMiddleware, async (req, res) => {
+/**
+ * @swagger
+ * /api/topicos:
+ *   post:
+ *     summary: Cria um novo tópico
+ *     tags: [Tópico]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_modulo
+ *               - nome_topico
+ *             properties:
+ *               id_modulo:
+ *                 type: integer
+ *               nome_topico:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Tópico criado com sucesso
+ *       400:
+ *         description: Campos obrigatórios ausentes
+ */
+router.post('/topicos', authMiddleware, async (req, res) => {
   try {
     const dadosTopico = req.body;
 
@@ -35,8 +86,34 @@ router.post('/topicos',authMiddleware, async (req, res) => {
   }
 });
 
-// Editar tópico
-router.put('/topico/:id',authMiddleware, async (req, res) => {
+/**
+ * @swagger
+ * /api/topico/{id}:
+ *   put:
+ *     summary: Edita um tópico
+ *     tags: [Tópico]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID do tópico
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Tópico editado com sucesso
+ *       500:
+ *         description: Erro ao editar tópico
+ */
+router.put('/topico/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const dadosAtualizados = req.body;
@@ -49,8 +126,38 @@ router.put('/topico/:id',authMiddleware, async (req, res) => {
   }
 });
 
-// Excluir tópico
-router.delete('/topico/:id',authMiddleware, async (req, res) => {
+/**
+ * @swagger
+ * /api/topico/{id}:
+ *   delete:
+ *     summary: Exclui um tópico
+ *     tags: [Tópico]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID do tópico
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - name: idAdm
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - name: senhaAdm
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Tópico excluído com sucesso
+ *       500:
+ *         description: Erro ao excluir tópico
+ */
+router.delete('/topico/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { idAdm, senhaAdm } = req.query;
@@ -64,7 +171,28 @@ router.delete('/topico/:id',authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/topico/:id',authMiddleware, async (req, res) => {
+/**
+ * @swagger
+ * /api/topico/{id}:
+ *   get:
+ *     summary: Obtém um tópico por ID
+ *     tags: [Tópico]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID do tópico
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Tópico encontrado
+ *       404:
+ *         description: Tópico não encontrado
+ */
+router.get('/topico/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const topico = await topicoService.obterTopicoPorId(id);

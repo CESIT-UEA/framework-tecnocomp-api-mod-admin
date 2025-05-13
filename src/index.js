@@ -16,6 +16,8 @@ const templateRoutes = require('./routes/templates');
 const app = express();
 const PORT = 8001;
 const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 let sslOptions;
 
@@ -42,6 +44,7 @@ app.use('/api', usersRoutes);
 app.use('/api', topicoRoutes);
 app.use('/api', templateRoutes);
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Inicializa o servidor e cria um administrador padrão se não existir
 const setup = async () => {
   await sequelize.sync();
