@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models');
 const { validarCadastroUser } = require('../utils/validarUsuario');
 const { enviarCodigoEmail } = require('../utils/validarEmail');
-
+const authorizeRole = require('../middleware/authorizeRole');
+const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 const SECRET_KEY = 'your_secret_key';
 const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
@@ -42,7 +43,7 @@ const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
  *       400:
  *         description: Erro ao registrar usuário
  */
-router.post('/register', async (req, res) => {
+router.post('/register',authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
     const { nome, email, senha, tipo } = req.body;
     const isValid = validarCadastroUser(nome, email, senha)
