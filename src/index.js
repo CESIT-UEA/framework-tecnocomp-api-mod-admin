@@ -7,15 +7,23 @@ const fs = require('fs');
 const https = require('https');
 const { sequelize } = require('./db/connect');
 const { Usuario } = require('./models');
+
 const authRoutes = require('./routes/auth');
 const plataformaRoutes = require('./routes/plataforma');
-const moduloRoutes = require('./routes/registrarModulo');
+const moduloRoutes = require('./routes/modulo');
 const usersRoutes = require('./routes/users');
 const topicoRoutes = require('./routes/topico');
 const templateRoutes = require('./routes/templates');
+const fichaTecnicaRoutes = require('./routes/fichaTecnica');
+const equipeRoutes = require('./routes/equipe');
+const membroRoutes = require('./routes/membro');
+const vantagemRoutes = require('./routes/vantagem');
+const referenciasModuloRoutes = require('./routes/referenciaModulo');
+const alunoRoutes = require('./routes/aluno');
+
 const app = express();
 const PORT = 8001;
-const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
+const SECRET_KEY = 'your_secret_key'; 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 
@@ -43,6 +51,12 @@ app.use('/api', moduloRoutes);
 app.use('/api', usersRoutes);
 app.use('/api', topicoRoutes);
 app.use('/api', templateRoutes);
+app.use('/api', fichaTecnicaRoutes);
+app.use('/api', equipeRoutes);
+app.use('/api', membroRoutes);
+app.use('/api', vantagemRoutes);
+app.use('/api', referenciasModuloRoutes);
+app.use('/api', alunoRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Inicializa o servidor e cria um administrador padrão se não existir
@@ -51,7 +65,7 @@ const setup = async () => {
 
   const adminExists = await Usuario.findOne({ where: { tipo: 'adm' } });
   if (!adminExists) {
-    const hashedPassword = await bcrypt.hash('admin123', 10); // Senha padrão, mude para algo seguro
+    const hashedPassword = await bcrypt.hash('admin123', 10); 
     await Usuario.create({
       username: 'Adm',
       email: 'adm@admin.com',

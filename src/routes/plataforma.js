@@ -2,6 +2,7 @@ const express = require('express');
 const plataformaService = require('../services/plataformaService');
 const authMiddleware = require('../middleware/auth');
 const router = express.Router();
+const authorizeRole = require('../middleware/authorizeRole');
 
 /**
  * @swagger
@@ -29,7 +30,7 @@ const router = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-router.post('/plataforma', authMiddleware, async (req, res) => {
+router.post('/plataforma', authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const novaPlataforma = await plataformaService.criarPlataforma(req.body);
     res.status(201).json(novaPlataforma);
@@ -54,7 +55,7 @@ router.post('/plataforma', authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/plataforma', authMiddleware, async (req, res) => {
+router.get('/plataforma', authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
     const plataformas = await plataformaService.listarPlataformas();
     res.json(plataformas);
@@ -87,7 +88,7 @@ router.get('/plataforma', authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/plataforma/:id', authMiddleware, async (req, res) => {
+router.get('/plataforma/:id', authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const plataforma = await plataformaService.obterPlataformaPorId(req.params.id);
     if (!plataforma) {
@@ -134,7 +135,7 @@ router.get('/plataforma/:id', authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno do servidor
  */
-router.put('/plataforma/:id', authMiddleware, async (req, res) => {
+router.put('/plataforma/:id', authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const plataformaAtualizada = await plataformaService.atualizarPlataforma(req.params.id, req.body);
     if (!plataformaAtualizada) {
@@ -180,7 +181,7 @@ router.put('/plataforma/:id', authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno do servidor
  */
-router.delete('/plataforma/:id', authMiddleware, async (req, res) => {
+router.delete('/plataforma/:id', authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try { 
     const { id } = req.params;
     const { idAdm, senhaAdm } = req.query;
@@ -219,7 +220,7 @@ router.delete('/plataforma/:id', authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno do servidor
  */
-router.get("/plataformas/usuario/:id", authMiddleware, async (req, res) => {
+router.get("/plataformas/usuario/:id", authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
     const modulos = await plataformaService.obterPlataformasPorUsuario(id);
