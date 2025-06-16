@@ -1,39 +1,35 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db/connect');
 
-const UsuarioTopico = sequelize.define('UsuarioTopico', {
+const UsuarioVideo = sequelize.define('UsuarioVideo', {
   id: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
     primaryKey: true,
+    autoIncrement: true,
   },
-  ltiUserId: {
-    type: DataTypes.STRING,
+  id_aluno: {
+    type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Alunos',
-      key: 'id_aluno',
+      key: 'id_aluno',  
     },
   },
-  id_topico: {
+  id_video: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Topicos',
+      model: 'Videos', 
       key: 'id',
     },
   },
-  nota: {
-    type: DataTypes.FLOAT,
-    defaultValue: 0,
-  },
-  encerrado: {
+  completo: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
 }, {
-  tableName: 'UsuarioTopico',
+  tableName: 'UsuarioVideo',
   timestamps: false,
 });
 
-module.exports = UsuarioTopico;
+module.exports = UsuarioVideo;

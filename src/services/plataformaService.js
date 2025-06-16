@@ -6,6 +6,12 @@ async function criarPlataforma({
   plataformaNome,
   idCliente,
   usuario_id,
+  temaTipo,
+  customPrimaria,
+  customSecundaria,
+  customTerciaria,
+  customQuartenaria,
+  customQuintenaria,
 }) {
   try {
     const novaPlataforma = await PlataformaRegistro.create({
@@ -13,6 +19,12 @@ async function criarPlataforma({
       plataformaNome,
       idCliente,
       usuario_id: parseInt(usuario_id),
+      temaTipo,
+      customPrimaria: temaTipo === "customizado" ? customPrimaria : null,
+      customSecundaria: temaTipo === "customizado" ? customSecundaria : null,
+      customTerciaria: temaTipo === "customizado" ? customTerciaria : null,
+      customQuartenaria: temaTipo === "customizado" ? customQuartenaria : null,
+      customQuintenaria: temaTipo === "customizado" ? customQuintenaria : null,
     });
 
     return novaPlataforma;
@@ -21,6 +33,7 @@ async function criarPlataforma({
     throw new Error("Erro ao criar a plataforma");
   }
 }
+
 
 async function listarPlataformas() {
   try {
@@ -58,17 +71,33 @@ async function obterPlataformasPorUsuario(usuarioId) {
 async function atualizarPlataforma(id, dadosAtualizados) {
   try {
     const plataforma = await PlataformaRegistro.findByPk(id);
-    if (!plataforma) {
-      return null;
-    }
+    if (!plataforma) return null;
 
-    await plataforma.update(dadosAtualizados);
+    const {
+      temaTipo,
+      customPrimaria,
+      customSecundaria,
+      customTerciaria,
+      customQuartenaria,
+      customQuintenaria,
+    } = dadosAtualizados;
+
+    await plataforma.update({
+      ...dadosAtualizados,
+      customPrimaria: temaTipo === "customizado" ? customPrimaria : null,
+      customSecundaria: temaTipo === "customizado" ? customSecundaria : null,
+      customTerciaria: temaTipo === "customizado" ? customTerciaria : null,
+      customQuartenaria: temaTipo === "customizado" ? customQuartenaria : null,
+      customQuintenaria: temaTipo === "customizado" ? customQuintenaria : null,
+    });
+
     return plataforma;
   } catch (error) {
     console.error("Erro ao atualizar plataforma:", error);
     throw new Error("Erro ao atualizar plataforma");
   }
 }
+
 
 async function deletarPlataforma(idAdm, senhaAdm, idExcluir) {
   try {
