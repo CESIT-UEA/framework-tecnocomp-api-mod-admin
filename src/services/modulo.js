@@ -7,12 +7,20 @@ const {
   Exercicios,
   Alternativas,
   Usuario,
+  FichaTecnica,
+  Equipe,
+  ReferenciaModulo,
+  Vantagem,
+  Membro,
+  Aluno,
+  UsuarioModulo
 } = require("../models");
 
 const bcrypt = require("bcrypt");
 const topicoService = require("../services/topico");
 const usuarioService = require("../services/usuario");
 const { randomUUID } = require("crypto");
+const { Op } = require('sequelize');
 
 async function criarModulo({
   nome_modulo,
@@ -179,15 +187,84 @@ async function obterModuloPorIdESeusTopicos(id) {
             },
           ],
         },
+        {
+          model: FichaTecnica,
+          include: [{ model: Equipe, as: "Equipes", include: [{model:Membro}] }],
+        },
+        {
+          model: ReferenciaModulo,
+        },
+        {
+          model: Vantagem,
+        },
       ],
     });
 
     return modulo;
   } catch (error) {
     console.error("Erro ao buscar módulo por ID:", error);
-    throw new Error("Erro ao buscar módulo por ID");
+    throw new Error("Erro ao buscar módulo por ID" + error);
   }
 }
+
+async function getProgressoAlunosPorModulo(idModulo, filtros = {}) {
+  try {
+    const where = { id_modulo: idModulo };
+
+    // Filtro por ativo
+    if (filtros.ativo !== undefined) {
+      where.ativo = filtros.ativo;
+    }
+
+    // Filtro por progresso mínimo
+    if (filtros.progressoMin !== undefined) {
+      where.progresso = { [Op.gte]: parseFloat(filtros.progressoMin) };
+    }
+
+    // Filtro por nota mínima
+    if (filtros.notaMin !== undefined) {
+      where.nota = { [Op.gte]: parseFloat(filtros.notaMin) };
+    }
+
+    // Filtro por nome ou email (dentro do include de Aluno)
+    const alunoWhere = {};
+
+    if (filtros.nome) {
+      alunoWhere.nome = { [Op.like]: `%${filtros.nome}%` };
+    }
+
+    if (filtros.email) {
+      alunoWhere.email = { [Op.like]: `%${filtros.email}%` };
+    }
+
+    const alunosModulo = await UsuarioModulo.findAll({
+      where,
+      include: [{
+        model: Aluno,
+        where: Object.keys(alunoWhere).length > 0 ? alunoWhere : undefined,
+      }],
+    });
+
+    return alunosModulo;
+  } catch (error) {
+    console.error('Erro ao buscar progresso dos alunos por módulo:', error);
+    throw new Error('Erro ao buscar progresso dos alunos por módulo');
+  }
+}
+
+async function atualizarUsuarioModulo(id, novosDados) {
+  try {
+    const usuarioModulo = await UsuarioModulo.findByPk(id);
+    if (!usuarioModulo) return null;
+
+    await usuarioModulo.update(novosDados);
+    return usuarioModulo;
+  } catch (error) {
+    console.error('Erro ao atualizar UsuarioModulo:', error);
+    throw new Error('Erro ao atualizar relação aluno-módulo');
+  }
+}
+
 
 module.exports = {
   criarModulo,
@@ -199,4 +276,6 @@ module.exports = {
   obterModuloPorIdESeusTopicos,
   obterModulosPorUsuario,
   listarModulosTemplates,
+  getProgressoAlunosPorModulo,
+  atualizarUsuarioModulo
 };

@@ -16,6 +16,8 @@ const Equipe = require("./equipe");
 const Membro = require("./membro");
 const Vantagem = require('./vantagem');
 const ReferenciaModulo = require("./ReferenciaModulo");
+const UsuarioVideo = require("./usuariovideo");
+
 
 
 // Associações
@@ -167,12 +169,17 @@ ReferenciaModulo.belongsTo(Modulo, {
 
 
 // Aluno → UsuarioModulo
-Aluno.hasMany(UsuarioModulo, { foreignKey: "ltiUserId" });
-UsuarioModulo.belongsTo(Aluno, { foreignKey: "ltiUserId" });
+Aluno.hasMany(UsuarioModulo, { foreignKey: "id_aluno" });
+UsuarioModulo.belongsTo(Aluno, { foreignKey: "id_aluno" });
 
 // Aluno → UsuarioTopico
-Aluno.hasMany(UsuarioTopico, { foreignKey: "ltiUserId" });
-UsuarioTopico.belongsTo(Aluno, { foreignKey: "ltiUserId" });
+Aluno.hasMany(UsuarioTopico, { foreignKey: "id_aluno" });
+UsuarioTopico.belongsTo(Aluno, { foreignKey: "id_aluno" });
+
+// Aluno → UsuarioVideo
+Aluno.hasMany(UsuarioVideo, { foreignKey: "id_aluno" });
+UsuarioVideo.belongsTo(Aluno, { foreignKey: "id_aluno" });
+
 
 module.exports = {
   sequelize,
@@ -192,5 +199,6 @@ module.exports = {
   Equipe,
   Membro,
   Vantagem,
-  ReferenciaModulo
+  ReferenciaModulo,
+  UsuarioVideo,
 };
