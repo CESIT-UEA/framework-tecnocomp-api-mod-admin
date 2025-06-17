@@ -180,6 +180,13 @@ UsuarioTopico.belongsTo(Aluno, { foreignKey: "id_aluno" });
 Aluno.hasMany(UsuarioVideo, { foreignKey: "id_aluno" });
 UsuarioVideo.belongsTo(Aluno, { foreignKey: "id_aluno" });
 
+Modulo.hasMany(UsuarioModulo, {
+  foreignKey: 'id_modulo',
+});
+UsuarioModulo.belongsTo(Modulo, {
+  foreignKey: 'id_modulo'
+});
+
 
 module.exports = {
   sequelize,

@@ -13,14 +13,14 @@ const {
   Vantagem,
   Membro,
   Aluno,
-  UsuarioModulo
+  UsuarioModulo,
 } = require("../models");
 
 const bcrypt = require("bcrypt");
 const topicoService = require("../services/topico");
 const usuarioService = require("../services/usuario");
 const { randomUUID } = require("crypto");
-const { Op } = require('sequelize');
+const { Op, fn, col } = require("sequelize");
 
 async function criarModulo({
   nome_modulo,
@@ -189,7 +189,9 @@ async function obterModuloPorIdESeusTopicos(id) {
         },
         {
           model: FichaTecnica,
-          include: [{ model: Equipe, as: "Equipes", include: [{model:Membro}] }],
+          include: [
+            { model: Equipe, as: "Equipes", include: [{ model: Membro }] },
+          ],
         },
         {
           model: ReferenciaModulo,
@@ -197,10 +199,37 @@ async function obterModuloPorIdESeusTopicos(id) {
         {
           model: Vantagem,
         },
+        {
+          model: UsuarioModulo,
+          where: {
+            comentario: { [Op.ne]: null },
+          },
+          attributes: ["comentario", "avaliacao", "id_aluno", "id_modulo"],
+          limit: 3,
+          order: [["id", "DESC"]],
+          required: false,
+        },
       ],
     });
 
-    return modulo;
+    const statsAvaliacoes = await UsuarioModulo.findOne({
+      attributes: [
+        [fn("AVG", col("avaliacao")), "media_avaliacao"],
+        [fn("COUNT", col("avaliacao")), "quantidade_avaliacoes"],
+      ],
+      where: {
+        id_modulo: id,
+        avaliacao: { [Op.ne]: null },
+      },
+      raw: true,
+    });
+
+    return {
+      ...modulo.toJSON(),
+      mediaAvaliacoes: parseFloat(statsAvaliacoes.media_avaliacao) || 0,
+      quantidadeAvaliacoes:
+        parseInt(statsAvaliacoes.quantidade_avaliacoes) || 0,
+    };
   } catch (error) {
     console.error("Erro ao buscar módulo por ID:", error);
     throw new Error("Erro ao buscar módulo por ID" + error);
@@ -211,22 +240,18 @@ async function getProgressoAlunosPorModulo(idModulo, filtros = {}) {
   try {
     const where = { id_modulo: idModulo };
 
-    // Filtro por ativo
     if (filtros.ativo !== undefined) {
       where.ativo = filtros.ativo;
     }
 
-    // Filtro por progresso mínimo
     if (filtros.progressoMin !== undefined) {
       where.progresso = { [Op.gte]: parseFloat(filtros.progressoMin) };
     }
 
-    // Filtro por nota mínima
     if (filtros.notaMin !== undefined) {
       where.nota = { [Op.gte]: parseFloat(filtros.notaMin) };
     }
 
-    // Filtro por nome ou email (dentro do include de Aluno)
     const alunoWhere = {};
 
     if (filtros.nome) {
@@ -239,16 +264,18 @@ async function getProgressoAlunosPorModulo(idModulo, filtros = {}) {
 
     const alunosModulo = await UsuarioModulo.findAll({
       where,
-      include: [{
-        model: Aluno,
-        where: Object.keys(alunoWhere).length > 0 ? alunoWhere : undefined,
-      }],
+      include: [
+        {
+          model: Aluno,
+          where: Object.keys(alunoWhere).length > 0 ? alunoWhere : undefined,
+        },
+      ],
     });
 
     return alunosModulo;
   } catch (error) {
-    console.error('Erro ao buscar progresso dos alunos por módulo:', error);
-    throw new Error('Erro ao buscar progresso dos alunos por módulo');
+    console.error("Erro ao buscar progresso dos alunos por módulo:", error);
+    throw new Error("Erro ao buscar progresso dos alunos por módulo");
   }
 }
 
@@ -260,11 +287,10 @@ async function atualizarUsuarioModulo(id, novosDados) {
     await usuarioModulo.update(novosDados);
     return usuarioModulo;
   } catch (error) {
-    console.error('Erro ao atualizar UsuarioModulo:', error);
-    throw new Error('Erro ao atualizar relação aluno-módulo');
+    console.error("Erro ao atualizar UsuarioModulo:", error);
+    throw new Error("Erro ao atualizar relação aluno-módulo");
   }
 }
-
 
 module.exports = {
   criarModulo,
@@ -277,5 +303,5 @@ module.exports = {
   obterModulosPorUsuario,
   listarModulosTemplates,
   getProgressoAlunosPorModulo,
-  atualizarUsuarioModulo
+  atualizarUsuarioModulo,
 };
