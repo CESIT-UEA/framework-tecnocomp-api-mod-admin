@@ -24,6 +24,12 @@ const Usuario = sequelize.define('Usuario', {
   tipo: {
     type: DataTypes.ENUM('adm', 'professor'),
     allowNull: false,
+  },
+  password_reset_token: {
+    type: DataTypes.STRING
+  },
+  password_reset_expires: {
+    type: DataTypes.DATE
   }
 }, {
   sequelize,

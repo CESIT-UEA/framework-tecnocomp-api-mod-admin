@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config()
 
-async function enviarEmail(email, titulo, texto){
+async function enviarEmail(email, titulo, texto = null, html = null){
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
@@ -14,7 +14,8 @@ async function enviarEmail(email, titulo, texto){
         from: process.env.SMTP_EMAIL,
         to: email,
         subject: titulo,
-        text: texto
+        text: texto,
+        html
     }
 
     try {
