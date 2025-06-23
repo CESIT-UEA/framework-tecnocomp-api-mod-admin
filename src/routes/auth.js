@@ -9,6 +9,7 @@ const { where } = require('sequelize');
 const { enviarEmail } = require('../services/email')
 const authorizeRole = require('../middleware/authorizeRole');
 const authMiddleware = require('../middleware/auth');
+const { createUser } = require('../services/usuario');
 const router = express.Router();
 const SECRET_KEY = 'your_secret_key';
 const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
@@ -56,17 +57,15 @@ router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res)
       return res.status(400).json({ message: "Tipo de usuário inválido. Permitido: 'adm' ou 'professor'." });
     }
 
-    const existente = await Usuario.findOne({ email });
-    if (existente) {
-      return res.status(400).json({ message: "E-mail já cadastrado." });
+    const sucesso = await createUser(nome, email, senha, tipo)
+    if (!sucesso){
+      return res.status(400).json({ message: "E-mail já está em uso." });
     }
-      
-    const hashedPassword = await bcrypt.hash(senha, 10);
-    await Usuario.create({ username: nome, email, senha: hashedPassword, tipo});
-      res.status(201).json({ message: `Usuário criado com sucesso.` });
-    } 
+
+    res.status(201).json({ message: `Usuário criado com sucesso.` });
+  }
   catch (error) {
-    res.status(400)
+    res.status(400).json({message: "Erro ao criar usuário"})
   }
 });
 
@@ -74,18 +73,15 @@ router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res)
 router.post('/auto-register', async (req, res)=>{
   try{
     const { nome, email, senha } = req.body;
-
-    const existente = await Usuario.findOne({ email });
-    if (existente) {
-      return res.status(400).json({ message: "E-mail já cadastrado." });
-    }
-
-    const hashedPassword = await bcrypt.hash(senha, 10)
-    await Usuario.create({ username: nome, email, senha: hashedPassword, tipo: 'professor'});
-      res.status(201).json({ message: `Usuário criado com sucesso.` });
     
+    const sucesso = await createUser(nome, email, senha, 'professor')
+    if (!sucesso){
+        return res.status(400).json({ message: "E-mail já está em uso." });
+    }
+    
+    res.status(201).json({ message: `Usuário criado com sucesso.` });
   } catch{
-    res.status(400)
+    res.status(400).json({message: "Erro ao criar usuário"})
   }
 })
 

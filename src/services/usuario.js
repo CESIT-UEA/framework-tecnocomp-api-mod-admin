@@ -24,6 +24,23 @@ async function getDadosUserById(id) {
   }
 }
 
+
+async function createUser(nome, email, senha, tipo){
+    try{
+      const existente = await Usuario.findOne({ email });
+      if (existente) {
+        return false;
+      }
+      
+      const hashedPassword = await bcrypt.hash(senha, 10);
+      await Usuario.create({ username: nome, email, senha: hashedPassword, tipo});
+      return true
+    }catch(error){
+      console.error(error);
+      throw new Error("Erro ao criar usuário");
+    }
+}
+
 async function updateUser(idAdm, senhaAdm, username, email, tipo, idEditar) {
   try {
     const admin = await Usuario.findOne({ where: { id: idAdm, tipo: "adm" } });
@@ -125,6 +142,7 @@ async function verificaModuloEhDoUsuario(id_usuario, id_modulo) {
 module.exports = {
   getDadosUser,
   getDadosUserById,
+  createUser,
   updateUser,
   deleteUser,
   atualizarPerfil,
