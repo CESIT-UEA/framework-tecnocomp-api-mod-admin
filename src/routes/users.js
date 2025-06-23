@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const userService = require("../services/usuario");
+const moduloService = require("../services/modulo");
 const authMiddleware = require('../middleware/auth');
+const authorizeRole = require('../middleware/authorizeRole');
 
 /**
  * @swagger
@@ -17,7 +19,7 @@ const authMiddleware = require('../middleware/auth');
  *       400:
  *         description: Erro na requisição
  */
-router.get("/listar-usuarios", authMiddleware, async (req, res) => {
+router.get("/listar-usuarios", authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
     const users = await userService.getDadosUser();
     res.status(200).json({ users });
@@ -50,7 +52,7 @@ router.get("/listar-usuarios", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno
  */
-router.get("/users/:id", authMiddleware, async (req, res) => {
+router.get("/users/:id", authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
     const { id } = req.params;
     const user = await userService.getDadosUserById(id);
@@ -110,7 +112,7 @@ router.get("/users/:id", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno
  */
-router.put("/users/:id", authMiddleware, async (req, res) => {
+router.put("/users/:id", authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
     const { idAdm, senhaAdm, username, email, tipo } = req.body;
     const idEditar = req.params.id;
@@ -160,7 +162,7 @@ router.put("/users/:id", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro interno
  */
-router.delete("/users", authMiddleware, async (req, res) => {
+router.delete("/users", authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
     const { idAdm, senhaAdm, idExcluir } = req.body;
     const result = await userService.deleteUser(idAdm, senhaAdm, idExcluir);
@@ -214,7 +216,7 @@ router.delete("/users", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro ao atualizar perfil
  */
-router.patch('/users/:id/self', authMiddleware, async (req, res) => {
+router.patch('/users/:id/self', authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
     const { senhaAtual, novaSenha, username, email } = req.body;
@@ -233,4 +235,13 @@ router.patch('/users/:id/self', authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/templates", authMiddleware,authorizeRole(['professor']), async (req, res) => {
+  try {
+    const templates = await moduloService.listarModulosTemplates();
+    res.status(200).json(templates);
+  } catch (error) {
+    console.error("Erro ao listar templates:", error);
+    res.status(500).json({ error: "Erro ao listar templates" });
+  }
+});
 module.exports = router;

@@ -7,7 +7,8 @@ const { enviarCodigoEmail } = require('../utils/validarEmail');
 const crypto = require('crypto');
 const { where } = require('sequelize');
 const { enviarEmail } = require('../services/email')
-
+const authorizeRole = require('../middleware/authorizeRole');
+const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 const SECRET_KEY = 'your_secret_key';
 const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
@@ -17,7 +18,7 @@ const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Registra um novo professor
+ *     summary: Administrador registra um novo usuário
  *     tags:
  *       - Autenticação
  *     requestBody:
@@ -46,22 +47,48 @@ const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
  *       400:
  *         description: Erro ao registrar usuário
  */
-router.post('/register', async (req, res) => {
+router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res) => {
   try {
-    const { nome, email, senha } = req.body;
-    const isValid = validarCadastroUser(nome, email, senha)
-    if (isValid){
-      // await enviarCodigoEmail(email)
-      const hashedPassword = await bcrypt.hash(senha, 10);
-      const usuario = await Usuario.create({ username: nome, email, senha: hashedPassword, tipo: 'professor'});
-      res.status(201);
-    } else {
-      res.json({message: "Cadastro de usuário invalidado pelo back"})
+    const { nome, email, senha, tipo } = req.body;
+    
+    const tiposPermitidos = ['adm', 'professor'];
+    if (!tiposPermitidos.includes(tipo)) {
+      return res.status(400).json({ message: "Tipo de usuário inválido. Permitido: 'adm' ou 'professor'." });
     }
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    const existente = await Usuario.findOne({ email });
+    if (existente) {
+      return res.status(400).json({ message: "E-mail já cadastrado." });
+    }
+      
+    const hashedPassword = await bcrypt.hash(senha, 10);
+    await Usuario.create({ username: nome, email, senha: hashedPassword, tipo});
+      res.status(201).json({ message: `Usuário criado com sucesso.` });
+    } 
+  catch (error) {
+    res.status(400)
   }
 });
+
+
+router.post('/auto-register', async (req, res)=>{
+  try{
+    const { nome, email, senha } = req.body;
+
+    const existente = await Usuario.findOne({ email });
+    if (existente) {
+      return res.status(400).json({ message: "E-mail já cadastrado." });
+    }
+
+    const hashedPassword = await bcrypt.hash(senha, 10)
+    await Usuario.create({ username: nome, email, senha: hashedPassword, tipo: 'professor'});
+      res.status(201).json({ message: `Usuário criado com sucesso.` });
+    
+  } catch{
+    res.status(400)
+  }
+})
+
 
 /**
  * @swagger

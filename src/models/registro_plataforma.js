@@ -29,6 +29,15 @@ const PlataformaRegistro = sequelize.define(
         key: "id",
       },
     },
+    temaTipo: {
+      type: DataTypes.ENUM("padrao", "tema1", "tema2", "customizado"),
+      defaultValue: "padrao",
+    },
+    customPrimaria: DataTypes.STRING,
+    customSecundaria: DataTypes.STRING,
+    customTerciaria: DataTypes.STRING,
+    customQuartenaria: DataTypes.STRING,
+    customQuintenaria: DataTypes.STRING,
   },
   {
     tableName: "plataformaRegistro",

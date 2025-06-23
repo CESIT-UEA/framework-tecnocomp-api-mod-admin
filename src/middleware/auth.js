@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'your_secret_key'; // Use uma chave secreta segura
+const SECRET_KEY = 'your_secret_key'; // coloque no .env depois!
 
 module.exports = (req, res, next) => {
   const token = req.headers['authorization'];
@@ -8,9 +8,10 @@ module.exports = (req, res, next) => {
   try {
     const decoded = jwt.verify(token.split(' ')[1], SECRET_KEY);
     req.userId = decoded.id;
+    req.userRole = decoded.tipo;
     next();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(401).json({ error: 'Token inválido' });
   }
 };

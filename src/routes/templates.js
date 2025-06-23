@@ -2,6 +2,7 @@ const express = require("express");
 const templateService = require("../services/templates");
 const authMiddleware = require("../middleware/auth");
 const router = express.Router();
+const authorizeRole = require('../middleware/authorizeRole');
 
 /**
  * @swagger
@@ -17,7 +18,7 @@ const router = express.Router();
  *       500:
  *         description: Erro ao listar templates
  */
-router.get("/templates", authMiddleware, async (req, res) => {
+router.get("/templates", authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const templates = await templateService.listarTemplates();
     res.status(200).json(templates);
@@ -49,7 +50,7 @@ router.get("/templates", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro ao buscar template
  */
-router.get("/templates/:id", authMiddleware, async (req, res) => {
+router.get("/templates/:id", authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
     const template = await templateService.obterTemplatePorId(id);
@@ -87,7 +88,7 @@ router.get("/templates/:id", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro ao clonar template
  */
-router.post("/templates/clonar/:id", authMiddleware, async (req, res) => {
+router.post("/templates/clonar/:id", authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
     const usuarioId = req.userId;
@@ -140,7 +141,7 @@ router.post("/templates/clonar/:id", authMiddleware, async (req, res) => {
  *       500:
  *         description: Erro ao atualizar status
  */
-router.patch("/template/modulo/:id", authMiddleware, async (req, res) => {
+router.patch("/template/modulo/:id", authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
     const { template } = req.body;
