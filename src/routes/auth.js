@@ -12,11 +12,12 @@ const router = express.Router();
 const SECRET_KEY = 'your_secret_key';
 const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
 
+
 /**
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Registra um novo usuário
+ *     summary: Registra um novo professor
  *     tags:
  *       - Autenticação
  *     requestBody:
@@ -47,12 +48,12 @@ const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
  */
 router.post('/register', async (req, res) => {
   try {
-    const { nome, email, senha, tipo } = req.body;
+    const { nome, email, senha } = req.body;
     const isValid = validarCadastroUser(nome, email, senha)
     if (isValid){
       // await enviarCodigoEmail(email)
       const hashedPassword = await bcrypt.hash(senha, 10);
-      const usuario = await Usuario.create({ username: nome, email, senha: hashedPassword, tipo });
+      const usuario = await Usuario.create({ username: nome, email, senha: hashedPassword, tipo: 'professor'});
       res.status(201);
     } else {
       res.json({message: "Cadastro de usuário invalidado pelo back"})
