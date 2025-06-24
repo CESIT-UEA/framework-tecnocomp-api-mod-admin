@@ -73,7 +73,7 @@ router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res)
 router.post('/autoRegister', async (req, res)=>{
   try{
     const { nome, email, senha } = req.body;
-    console.log("passou")
+
     const sucesso = await createUser(nome, email, senha, 'professor')
     console.log(sucesso)
     if (!sucesso){
