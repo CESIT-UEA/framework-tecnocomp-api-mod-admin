@@ -70,11 +70,12 @@ router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res)
 });
 
 
-router.post('/auto-register', async (req, res)=>{
+router.post('/autoRegister', async (req, res)=>{
   try{
     const { nome, email, senha } = req.body;
-    
+    console.log("passou")
     const sucesso = await createUser(nome, email, senha, 'professor')
+    console.log(sucesso)
     if (!sucesso){
         return res.status(400).json({ message: "E-mail já está em uso." });
     }

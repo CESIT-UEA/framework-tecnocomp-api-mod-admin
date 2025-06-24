@@ -27,7 +27,7 @@ async function getDadosUserById(id) {
 
 async function createUser(nome, email, senha, tipo){
     try{
-      const existente = await Usuario.findOne({ email });
+      const existente = await Usuario.findOne({where: {email}});
       if (existente) {
         return false;
       }
