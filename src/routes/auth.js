@@ -80,7 +80,7 @@ router.post('/autoRegister', async (req, res)=>{
         return res.status(400).json({ message: "E-mail já está em uso." });
     }
     
-    res.status(201).json({ message: `Usuário criado com sucesso.` });
+    res.status(201).json({ message: `Usuário criado com sucesso.`, sucess: true });
   } catch{
     res.status(400).json({message: "Erro ao criar usuário"})
   }
