@@ -153,7 +153,7 @@ router.post('/forgot_password', async (req, res) => {
       const usuario = await Usuario.findOne({ where: { email } });
       
       if (!usuario) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'User not found', sucess: false });
       }
 
       // gera um token que expira depois de 1 hora.
@@ -180,11 +180,11 @@ router.post('/forgot_password', async (req, res) => {
         `
       )
       
-      res.json({message: "sucess"})
+      res.json({message: "Email enviado com sucesso", sucess: true})
 
     }catch(error) {
       console.error('Erro no forgot_password:', error);
-      res.status(400).json({ error: 'Erro on forgot password, try again'})
+      res.status(400).json({ error: 'Erro on forgot password, try again', sucess: false})
     }
 })
 
