@@ -43,7 +43,7 @@ cron.schedule('*/30 * * * *', async ()=>{
             }
           }
       })
-      console.log(`Cron: ${deleted} registros expirados removidos.`);
+      console.log(`Cron: ${deleted} registro(s) expirados removidos.`);
     } catch (error) {
       console.error('Erro ao executar cron job:', error);
     }
