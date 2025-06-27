@@ -17,6 +17,7 @@ const Membro = require("./membro");
 const Vantagem = require('./vantagem');
 const ReferenciaModulo = require("./ReferenciaModulo");
 const UsuarioVideo = require("./usuariovideo");
+const UsuarioTemporario = require('./usuarioTemporario')
 
 
 
@@ -208,4 +209,5 @@ module.exports = {
   Vantagem,
   ReferenciaModulo,
   UsuarioVideo,
+  UsuarioTemporario
 };

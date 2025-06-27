@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Usuario } = require('../models');
+const { Usuario, UsuarioTemporario } = require('../models');
 const { validarCadastroUser } = require('../utils/validarUsuario');
 const { enviarCodigoEmail } = require('../utils/validarEmail');
 const crypto = require('crypto');
@@ -57,10 +57,12 @@ router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res)
       return res.status(400).json({ message: "Tipo de usuário inválido. Permitido: 'adm' ou 'professor'." });
     }
 
-    const sucesso = await createUser(nome, email, senha, tipo)
-    if (!sucesso){
-      return res.status(400).json({ message: "E-mail já está em uso." });
+    const emailExistente = await Usuario.findOne({where: {email}});
+    if (emailExistente) {
+      return res.status(400).json({ message: "Este E-mail já está sendo utilizado." });
     }
+
+    await createUser(nome, email, senha, tipo, false)
 
     res.status(201).json({ message: `Usuário criado com sucesso.` });
   }
@@ -74,16 +76,56 @@ router.post('/autoRegister', async (req, res)=>{
   try{
     const { nome, email, senha } = req.body;
 
-    const sucesso = await createUser(nome, email, senha, 'professor')
-    console.log(sucesso)
-    if (!sucesso){
-        return res.status(400).json({ message: "E-mail já está em uso." });
+    const emailExistente = await Usuario.findOne({where: {email}});
+    if (emailExistente) {
+      return res.status(400).json({ message: "Este E-mail já está sendo utilizado.", sucess: false });
+    }
+
+    await UsuarioTemporario.destroy({where: {email}})
+
+    const {isUserTemporario, codigoEmail} = await createUser(nome, email, senha, 'professor', true)
+    
+    if (isUserTemporario){
+        enviarCodigoEmail(email, codigoEmail)
     }
     
-    res.status(201).json({ message: `Usuário criado com sucesso.`, sucess: true });
+    res.status(200).json({ message: `Código de verificação enviado por E-mail!`, sucess: true });
   } catch{
-    res.status(400).json({message: "Erro ao criar usuário"})
+    res.status(400).json({message: "Erro ao enviar código para email"})
   }
+})
+
+
+router.post('/valida_autoRegister', async (req, res)=>{
+  try {
+    const {email, codigo} = req.body
+    const temporario = await UsuarioTemporario.findOne({where: {email}})
+    console.log(temporario)
+    if (!temporario){
+      return res.status(400).json({ message: 'Nenhum cadastro pendente encontrado' });
+    }
+
+    const usuario = temporario.dataValues
+
+    // console.log("Código do banco: ", usuario.verificationCode)
+    // console.log("Código do usuário enviado: ", codigo)
+    if (usuario.verificationCode !== codigo){
+      return res.status(400).json({ message: 'Código inválido' });
+    }
+
+    if (usuario.expiresAt < new Date()){
+      return res.status(400).json({ message: 'Código expirado' });
+    }
+
+    await createUser(usuario.username, usuario.email, usuario.senha, usuario.tipo, false)
+    await UsuarioTemporario.destroy({where: {email}})
+
+    res.status(201).json({ message: 'Usuário criado com sucesso!' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro interno' });
+  }
+
 })
 
 

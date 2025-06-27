@@ -1,5 +1,6 @@
-const { Usuario, Modulo } = require("../models");
+const { Usuario, Modulo, UsuarioTemporario } = require("../models");
 const bcrypt = require("bcrypt");
+const { gerarCodigoEmail } = require("../utils/validarEmail");
 
 async function getDadosUser() {
   try {
@@ -25,16 +26,32 @@ async function getDadosUserById(id) {
 }
 
 
-async function createUser(nome, email, senha, tipo){
+async function createUser(nome, email, senha, tipo, isUserTemporario){
     try{
-      const existente = await Usuario.findOne({where: {email}});
-      if (existente) {
-        return false;
-      }
-      
       const hashedPassword = await bcrypt.hash(senha, 10);
+
+      if (isUserTemporario){
+        const codigoEmail = gerarCodigoEmail()
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
+
+        await UsuarioTemporario.create(
+          { username: nome, email, senha: hashedPassword, verificationCode: codigoEmail, tipo, expiresAt}
+        )
+        return {isUserTemporario, codigoEmail}
+      }
+
+      /* verifica se existe um usuário temporario com o mesmo email e cria um usuário permanente com a senha
+         criptografada do usuário temporário */
+      const verificaUsuarioTemporario = await UsuarioTemporario.findOne({where: {email}})
+      if (verificaUsuarioTemporario){
+          const usuarioTemporario = verificaUsuarioTemporario.dataValues 
+          await Usuario.create({ username: nome, email, senha: usuarioTemporario.senha, tipo});
+          return
+      }
+
       await Usuario.create({ username: nome, email, senha: hashedPassword, tipo});
       return true
+
     }catch(error){
       console.error(error);
       throw new Error("Erro ao criar usuário");
