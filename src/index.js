@@ -20,6 +20,8 @@ const membroRoutes = require('./routes/membro');
 const vantagemRoutes = require('./routes/vantagem');
 const referenciasModuloRoutes = require('./routes/referenciaModulo');
 const alunoRoutes = require('./routes/aluno');
+const autoRegister = require('./routes/autoRegister')
+const forgotPassword = require('./routes/forgotPassword')
 
 const app = express();
 const PORT = 8001;
@@ -80,6 +82,8 @@ app.use('/api', membroRoutes);
 app.use('/api', vantagemRoutes);
 app.use('/api', referenciasModuloRoutes);
 app.use('/api', alunoRoutes);
+app.use('/api', autoRegister);
+app.use('/api', forgotPassword)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Inicializa o servidor e cria um administrador padrão se não existir

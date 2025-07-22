@@ -40,8 +40,7 @@ async function createUser(nome, email, senha, tipo, isUserTemporario){
         return {isUserTemporario, codigoEmail}
       }
 
-      /* verifica se existe um usuário temporario com o mesmo email e cria um usuário permanente com a senha
-         criptografada do usuário temporário */
+    
       const verificaUsuarioTemporario = await UsuarioTemporario.findOne({where: {email}})
       if (verificaUsuarioTemporario){
           const usuarioTemporario = verificaUsuarioTemporario.dataValues 
