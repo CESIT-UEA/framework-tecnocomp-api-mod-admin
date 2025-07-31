@@ -18,6 +18,12 @@ const Exercicios = sequelize.define('Exercicios', {
   questao: {
     type: DataTypes.TEXT,
   },
+  aberta: {
+    type: DataTypes.BOOLEAN
+  },
+  criterios: {
+    type: DataTypes.CHAR
+  }
 }, {
   tableName: 'Exercicios',
   timestamps: false,

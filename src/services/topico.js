@@ -248,7 +248,7 @@ async function obterTopicoPorId(id) {
         },
       ],
     });
-    console.log(JSON.stringify(topico, null, 2));
+    // console.log(JSON.stringify(topico, null, 2));
     if (!topico) {
       throw new Error("Tópico não encontrado");
     }
