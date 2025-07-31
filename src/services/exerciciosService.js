@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const { Exercicios, Alternativas } = require('../models');
 
 async function criarExercicios(idTopico, exercicios) {
@@ -23,4 +24,16 @@ async function criarExercicios(idTopico, exercicios) {
   }
 }
 
-module.exports = { criarExercicios };
+async function setQuestaoAberta(id_topico, valor){
+  try {
+    await Exercicios.update({ aberta: valor }, { 
+      where: { 
+        id_topico 
+      }
+    })
+  } catch (error) {
+    throw new Error('Erro ao atualizar se a questão é aberta')
+  }
+}
+
+module.exports = { criarExercicios, setQuestaoAberta };
