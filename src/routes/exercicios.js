@@ -9,7 +9,7 @@ router.patch('/topico/:id_topico/exercicio', authMiddleware, authorizeRole(['adm
         try {
             const { id_topico } = req.params;
             const { valor } = req.body;  // boleano que define se a questão é aberta
-            console.log(id_topico, valor)
+            
             await setQuestaoAberta(id_topico, valor);
             res.status(200).json({ message: `Questão aberta definida como ${valor}!` })
         } catch (error) {
