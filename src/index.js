@@ -21,6 +21,7 @@ const vantagemRoutes = require('./routes/vantagem');
 const referenciasModuloRoutes = require('./routes/referenciaModulo');
 const alunoRoutes = require('./routes/aluno');
 const exercicioRoutes = require('./routes/exercicios')
+const autoRegister = require('./routes/autoRegister')
 
 const app = express();
 const PORT = 8001;
@@ -59,6 +60,7 @@ app.use('/api', vantagemRoutes);
 app.use('/api', referenciasModuloRoutes);
 app.use('/api', alunoRoutes);
 app.use('/api', exercicioRoutes);
+app.use('/api', autoRegister);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Inicializa o servidor e cria um administrador padrão se não existir
