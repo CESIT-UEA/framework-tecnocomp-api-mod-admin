@@ -35,9 +35,11 @@ async function criarPlataforma({
 }
 
 
-async function listarPlataformas() {
+async function listarPlataformasPaginadas(pagina = 1) {
   try {
-    const plataformas = await PlataformaRegistro.findAll();
+    const limit = 4
+    const offset = (pagina - 1) * limit
+    const plataformas = await PlataformaRegistro.findAll({ offset, limit });
     return plataformas;
   } catch (error) {
     console.error("Erro ao listar plataformas:", error);
@@ -119,11 +121,26 @@ async function deletarPlataforma(idAdm, senhaAdm, idExcluir) {
   }
 }
 
+async function infoPaginacaoPlataformas() {
+  try {
+    const limit = 4;
+    const totalRegistros = await PlataformaRegistro.count();
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+    
+    return { totalPaginas, totalRegistros }
+  } catch (error) {
+    console.error('Erro ao buscar informações das plataformas', error)
+    throw new Error('Erro ao buscar informações dos plataformas')
+  }
+}
+
+
 module.exports = {
   criarPlataforma,
-  listarPlataformas,
+  listarPlataformasPaginadas,
   obterPlataformaPorId,
   atualizarPlataforma,
   deletarPlataforma,
-  obterPlataformasPorUsuario
+  obterPlataformasPorUsuario,
+  infoPaginacaoPlataformas
 };

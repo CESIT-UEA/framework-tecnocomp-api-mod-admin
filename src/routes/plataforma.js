@@ -57,8 +57,13 @@ router.post('/plataforma', authMiddleware,authorizeRole(['adm','professor']), as
  */
 router.get('/plataforma', authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
-    const plataformas = await plataformaService.listarPlataformas();
-    res.json(plataformas);
+    let page = parseInt(req.query.page)
+    if (isNaN(page) || page < 1) page = 1;
+
+    const plataformas = await plataformaService.listarPlataformasPaginadas(page);
+    const infoPlataformas = await plataformaService.infoPaginacaoPlataformas();
+  
+    res.json({ plataformas, infoPlataformas });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
