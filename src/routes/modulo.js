@@ -98,7 +98,8 @@ router.get(
       let page = parseInt(req.query.page)
       if (isNaN(page) || page < 1) page = 1;
       const modulos = await moduloService.listarModulosPaginados(page);
-      res.status(200).json(modulos);
+      const infoModulos = await moduloService.infoPaginacaoModulos()
+      res.status(200).json({modulos, infoModulos });
     } catch (error) {
       console.error("Erro ao listar módulos:", error);
       res.status(500).json({ error: "Erro ao listar módulos" });

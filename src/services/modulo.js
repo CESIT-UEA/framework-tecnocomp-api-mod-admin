@@ -48,10 +48,10 @@ async function criarModulo({
   }
 }
 
-async function listarModulosPaginados(page = 1) {
+async function listarModulosPaginados(pagina = 1) {
   try {
     const limit = 3
-    const offset = (page - 1) * limit
+    const offset = (pagina - 1) * limit
     const modulos = await Modulo.findAll({ offset, limit });
     return modulos;
   } catch (error) {
@@ -59,6 +59,20 @@ async function listarModulosPaginados(page = 1) {
     throw new Error("Erro ao listar módulos");
   }
 }
+
+async function infoPaginacaoModulos() {
+  try {
+    const limit = 3;
+    const totalRegistros = await Modulo.count();
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+    
+    return { totalPaginas, totalRegistros }
+  } catch (error) {
+    console.error('Erro ao buscar informações dos módulos', error)
+    throw new Error('Erro ao buscar informações dos módulos')
+  }
+}
+
 
 
 async function listarModulosTemplates() {
@@ -308,4 +322,5 @@ module.exports = {
   listarModulosTemplates,
   getProgressoAlunosPorModulo,
   atualizarUsuarioModulo,
+  infoPaginacaoModulos
 };
