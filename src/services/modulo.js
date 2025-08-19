@@ -48,15 +48,19 @@ async function criarModulo({
   }
 }
 
-async function listarModulos() {
+async function listarModulosPaginados(page = 1) {
   try {
-    const modulos = await Modulo.findAll();
+    const limit = 3
+    const offset = (page - 1) * limit
+    const modulos = await Modulo.findAll({ offset, limit });
     return modulos;
   } catch (error) {
     console.error("Erro ao listar módulos:", error);
     throw new Error("Erro ao listar módulos");
   }
 }
+
+
 async function listarModulosTemplates() {
   try {
     const modulos = await Modulo.findAll({
@@ -294,7 +298,7 @@ async function atualizarUsuarioModulo(id, novosDados) {
 
 module.exports = {
   criarModulo,
-  listarModulos,
+  listarModulosPaginados,
   obterModuloPorId,
   atualizarModulo,
   deletarModulo,

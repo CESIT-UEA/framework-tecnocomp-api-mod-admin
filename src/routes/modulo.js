@@ -95,7 +95,9 @@ router.get(
   authorizeRole(["adm"]),
   async (req, res) => {
     try {
-      const modulos = await moduloService.listarModulos();
+      let page = parseInt(req.query.page)
+      if (isNaN(page) || page < 1) page = 1;
+      const modulos = await moduloService.listarModulosPaginados(page);
       res.status(200).json(modulos);
     } catch (error) {
       console.error("Erro ao listar módulos:", error);
