@@ -1,10 +1,14 @@
 const { Usuario, Modulo } = require("../models");
 const bcrypt = require("bcrypt");
 
-async function getDadosUser() {
+async function getDadosUserPaginados(pagina = 1) {
   try {
+    const limit = 4
+    const offset = (pagina - 1) * limit
     return await Usuario.findAll({
       attributes: { exclude: ["senha"] },
+      offset,
+      limit
     });
   } catch (error) {
     console.error(error);
@@ -122,11 +126,26 @@ async function verificaModuloEhDoUsuario(id_usuario, id_modulo) {
   }
 }
 
+
+async function infoPaginacaoUsuarios(){
+  try {
+    const limit = 4;
+    const totalRegistros = await Usuario.count();
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+    
+    return { totalPaginas, totalRegistros }
+  } catch (error) {
+    console.error('Erro ao buscar informações dos usuários', error)
+    throw new Error('Erro ao buscar informações dos usuários')
+  }
+}
+
 module.exports = {
-  getDadosUser,
+  getDadosUserPaginados,
   getDadosUserById,
   updateUser,
   deleteUser,
   atualizarPerfil,
   verificaModuloEhDoUsuario,
+  infoPaginacaoUsuarios
 };

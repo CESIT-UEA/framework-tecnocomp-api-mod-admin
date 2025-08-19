@@ -21,8 +21,11 @@ const authorizeRole = require('../middleware/authorizeRole');
  */
 router.get("/listar-usuarios", authMiddleware,authorizeRole(['adm']), async (req, res) => {
   try {
-    const users = await userService.getDadosUser();
-    res.status(200).json({ users });
+    let page = parseInt(req.query.page)
+    if (isNaN(page) || page < 1) page = 1;
+    const users = await userService.getDadosUserPaginados(page);
+    const infoUsers = await userService.infoPaginacaoUsuarios(); 
+    res.status(200).json({ users, infoUsers });
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: error.message });
