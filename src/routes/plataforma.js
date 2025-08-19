@@ -228,16 +228,21 @@ router.delete('/plataforma/:id', authMiddleware,authorizeRole(['adm','professor'
 router.get("/plataformas/usuario/:id", authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
-    const modulos = await plataformaService.obterPlataformasPorUsuario(id);
+    let page = parseInt(req.query.page)
+    if (isNaN(page) || page < 1) page = 1;
 
-    if (!modulos || modulos.length === 0) {
-      return res.status(404).json({ message: "Nenhum módulo encontrado para este usuário." });
+    const plataformas = await plataformaService.obterPlataformasPaginadasPorUsuario(id, page);
+
+    if (!plataformas || plataformas.length === 0) {
+      return res.status(404).json({ message: "Nenhuma plataforma encontrada para este usuário." });
     }
 
-    res.status(200).json(modulos);
+    const infoPlataforma = await plataformaService.infoPlataformasPorUsuario(id) 
+
+    res.status(200).json({plataformas, infoPlataforma});
   } catch (error) {
-    console.error("Erro ao obter módulos por usuário:", error);
-    res.status(500).json({ error: "Erro ao obter módulos por usuário." });
+    console.error("Erro ao obter plataformas por usuário:", error);
+    res.status(500).json({ error: "Erro ao obter plataformas por usuário." });
   }
 });
 

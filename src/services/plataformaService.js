@@ -57,10 +57,14 @@ async function obterPlataformaPorId(id) {
   }
 }
 
-async function obterPlataformasPorUsuario(usuarioId) {
+async function obterPlataformasPaginadasPorUsuario(usuarioId, pagina = 1) {
   try {
+    const limit = 3; 
+    const offset = (pagina - 1) * limit
     const plataformas = await PlataformaRegistro.findAll({
       where: { usuario_id: usuarioId },
+      offset,
+      limit
     });
 
     return plataformas;
@@ -130,10 +134,25 @@ async function infoPaginacaoPlataformas() {
     return { totalPaginas, totalRegistros }
   } catch (error) {
     console.error('Erro ao buscar informações das plataformas', error)
-    throw new Error('Erro ao buscar informações dos plataformas')
+    throw new Error('Erro ao buscar informações das plataformas')
   }
 }
 
+async function infoPlataformasPorUsuario(idUsuario){
+  try {
+    const limit = 3; 
+    const totalRegistros = await PlataformaRegistro.count({
+      where: { usuario_id: idUsuario } 
+    });
+
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+
+    return { totalPaginas, totalRegistros };
+  } catch (error) {
+    console.error('Erro ao buscar informações das plataformas por usuário', error)
+    throw new Error('Erro ao buscar informações das plataformas por usuário')
+  }
+}
 
 module.exports = {
   criarPlataforma,
@@ -141,6 +160,7 @@ module.exports = {
   obterPlataformaPorId,
   atualizarPlataforma,
   deletarPlataforma,
-  obterPlataformasPorUsuario,
-  infoPaginacaoPlataformas
+  obterPlataformasPaginadasPorUsuario,
+  infoPaginacaoPlataformas,
+  infoPlataformasPorUsuario
 };
