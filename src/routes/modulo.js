@@ -334,7 +334,9 @@ router.get(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const modulos = await moduloService.obterModulosPorUsuario(id);
+      let page = parseInt(req.query.page)
+      if (isNaN(page) || page < 1) page = 1;
+      const modulos = await moduloService.obterModulosPaginadosPorUsuario(id, page);
 
       if (!modulos || modulos.length === 0) {
         return res
@@ -342,7 +344,9 @@ router.get(
           .json({ message: "Nenhum módulo encontrado para este usuário." });
       }
 
-      res.status(200).json(modulos);
+      const infoModulos = await moduloService.infoModulosPorUsuario(id);
+
+      res.status(200).json({modulos, infoModulos });
     } catch (error) {
       console.error("Erro ao obter módulos por usuário:", error);
       res.status(500).json({ error: "Erro ao obter módulos por usuário." });

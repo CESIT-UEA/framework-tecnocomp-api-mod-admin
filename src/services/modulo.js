@@ -73,6 +73,21 @@ async function infoPaginacaoModulos() {
   }
 }
 
+async function infoModulosPorUsuario(idUsuario) {
+  try {
+    const limit = 3; 
+    const totalRegistros = await Modulo.count({
+      where: { usuario_id: idUsuario } 
+    });
+
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+
+    return { totalPaginas, totalRegistros };
+  } catch (error) {
+    console.error('Erro ao buscar informações dos módulos por usuário', error);
+    throw new Error('Erro ao buscar informações dos módulos por usuário');
+  }
+}
 
 
 async function listarModulosTemplates() {
@@ -87,10 +102,15 @@ async function listarModulosTemplates() {
   }
 }
 
-async function obterModulosPorUsuario(usuarioId) {
+async function obterModulosPaginadosPorUsuario(usuarioId, pagina = 1) {
   try {
+    const limit = 3
+    const offset = (pagina - 1) * limit
+
     const modulos = await Modulo.findAll({
       where: { usuario_id: usuarioId },
+      offset,
+      limit
     });
 
     return modulos;
@@ -318,9 +338,10 @@ module.exports = {
   deletarModulo,
   atualizarStatusPublicacao,
   obterModuloPorIdESeusTopicos,
-  obterModulosPorUsuario,
+  obterModulosPaginadosPorUsuario,
   listarModulosTemplates,
   getProgressoAlunosPorModulo,
   atualizarUsuarioModulo,
-  infoPaginacaoModulos
+  infoPaginacaoModulos,
+  infoModulosPorUsuario
 };
