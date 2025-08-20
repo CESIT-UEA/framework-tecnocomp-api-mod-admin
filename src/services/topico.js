@@ -15,10 +15,14 @@ const exerciciosService = require("./exerciciosService");
 const { validarTopico } = require("../utils/validarTopico");
 const bcrypt = require("bcrypt");
 
-async function obterTopicoCompletoPorModulo(idModulo) {
+async function obterTopicoCompletoPaginadosPorModulo(idModulo, pagina = 1) {
   try {
+    const limit = 3
+    const offset = (pagina - 1) * limit
     return await Topico.findAll({
       where: { id_modulo: idModulo },
+      offset,
+      limit,
       include: [
         { model: VideoUrls, as: "VideoUrls" },
         { model: SaibaMais, as: "SaibaMais" },
@@ -319,11 +323,28 @@ async function clonarTopicoCompleto(topicoOriginal, idModuloNovo) {
 }
 
 
+async function infoTopicosPorModulo(idModulo){
+  try {
+    const limit = 3; 
+    const totalRegistros = await Topico.count({
+      where: { id_modulo: idModulo } 
+    });
+
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+
+    return { totalPaginas, totalRegistros };
+  } catch (error) {
+    console.error("Erro ao buscar informações dos tópicos de um módulo:", error);
+    throw new Error("Erro ao buscar informações dos tópicos de um módulo");
+  }
+}
+
 module.exports = {
-  obterTopicoCompletoPorModulo,
+  obterTopicoCompletoPaginadosPorModulo,
   criarTopico,
   editarTopico,
   excluirTopico,
   obterTopicoPorId,
-  clonarTopicoCompleto
+  clonarTopicoCompleto,
+  infoTopicosPorModulo
 };
