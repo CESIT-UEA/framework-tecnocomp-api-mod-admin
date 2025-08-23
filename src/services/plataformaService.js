@@ -37,7 +37,7 @@ async function criarPlataforma({
 
 async function listarPlataformasPaginadas(pagina = 1) {
   try {
-    const limit = 4
+    const limit = 2
     const offset = (pagina - 1) * limit
     const plataformas = await PlataformaRegistro.findAll({ offset, limit });
     return plataformas;
@@ -127,7 +127,7 @@ async function deletarPlataforma(idAdm, senhaAdm, idExcluir) {
 
 async function infoPaginacaoPlataformas() {
   try {
-    const limit = 4;
+    const limit = 2;
     const totalRegistros = await PlataformaRegistro.count();
     const totalPaginas = Math.ceil(totalRegistros / limit);
     
