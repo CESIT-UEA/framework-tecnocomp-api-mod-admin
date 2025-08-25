@@ -30,13 +30,17 @@ const authorizeRole = require('../middleware/authorizeRole');
 router.get('/topicos/:id', authMiddleware,authorizeRole(['adm','professor']), async (req, res) => {
   try {
     const { id } = req.params;
-
+    let page = parseInt(req.query.page)
+    
+    if (isNaN(page) || page < 1) page = 1;
     if (!id) {
-      return res.status(400).json({ error: 'ID do tópico é obrigatório' });
+      return res.status(400).json({ error: 'ID do módulo é obrigatório' });
     }
 
-    const topico = await topicoService.obterTopicoCompletoPorModulo(id);
-    res.status(200).json(topico);
+    const topico = await topicoService.obterTopicoCompletoPaginadosPorModulo(id, page);
+    const infoTopicosPorModulos = await topicoService.infoTopicosPorModulo(id);
+    
+    res.status(200).json({ topico, infoTopicosPorModulos});
   } catch (error) {
     console.error('Erro ao buscar tópico completo:', error);
     res.status(500).json({ error: error.message });

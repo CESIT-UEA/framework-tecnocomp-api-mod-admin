@@ -23,6 +23,7 @@ const alunoRoutes = require('./routes/aluno');
 const autoRegister = require('./routes/autoRegister')
 const forgotPassword = require('./routes/forgotPassword')
 const exercicioRoutes = require('./routes/exercicios')
+const autoRegister = require('./routes/autoRegister')
 
 const app = express();
 const PORT = 8001;
@@ -86,6 +87,7 @@ app.use('/api', alunoRoutes);
 app.use('/api', autoRegister);
 app.use('/api', forgotPassword)
 app.use('/api', exercicioRoutes);
+app.use('/api', autoRegister);
 
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
