@@ -2,19 +2,19 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models');
-const { validarCadastroUser } = require('../utils/validarUsuario');
-const { enviarCodigoEmail } = require('../utils/validarEmail');
 const authorizeRole = require('../middleware/authorizeRole');
 const authMiddleware = require('../middleware/auth');
+const { createUser } = require('../services/usuario');
 const router = express.Router();
 const SECRET_KEY = 'your_secret_key';
 const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
+
 
 /**
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Registra um novo usuário
+ *     summary: Administrador registra um novo usuário
  *     tags:
  *       - Autenticação
  *     requestBody:
@@ -43,22 +43,29 @@ const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
  *       400:
  *         description: Erro ao registrar usuário
  */
-router.post('/register',authMiddleware,authorizeRole(['adm']), async (req, res) => {
+router.post('/register',authMiddleware, authorizeRole(['adm']), async (req, res) => {
   try {
     const { nome, email, senha, tipo } = req.body;
-    const isValid = validarCadastroUser(nome, email, senha)
-    if (isValid){
-      // await enviarCodigoEmail(email)
-      const hashedPassword = await bcrypt.hash(senha, 10);
-      const usuario = await Usuario.create({ username: nome, email, senha: hashedPassword, tipo });
-      res.status(201).json(usuario);
-    } else {
-      res.json({message: "Cadastro de usuário invalidado pelo back"})
+    
+    const tiposPermitidos = ['adm', 'professor'];
+    if (!tiposPermitidos.includes(tipo)) {
+      return res.status(400).json({ message: "Tipo de usuário inválido. Permitido: 'adm' ou 'professor'." });
     }
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    const emailExistente = await Usuario.findOne({where: {email}});
+    if (emailExistente) {
+      return res.status(400).json({ message: "Este E-mail já está sendo utilizado." });
+    }
+
+    await createUser(nome, email, senha, tipo, false)
+
+    res.status(201).json({ message: `Usuário criado com sucesso.` });
+  }
+  catch (error) {
+    res.status(400).json({message: "Erro ao criar usuário"})
   }
 });
+
 
 /**
  * @swagger
@@ -116,6 +123,7 @@ router.post('/login', async (req, res) => {
     res.status(400).json({ error: error });
   }
 });
+
 
 /**
  * @swagger

@@ -5,9 +5,8 @@ function gerarCodigoEmail(){
     return code.padStart(6, '0')
 }
 
-async function enviarCodigoEmail(email){
-    const codigoVerificacao = gerarCodigoEmail() 
+async function enviarCodigoEmail(email, codigoVerificacao){ 
     enviarEmail(email, "Código de verificação", `Seu código de verificação é ${codigoVerificacao}.`)
 }
 
-module.exports = { enviarCodigoEmail }
+module.exports = { enviarCodigoEmail, gerarCodigoEmail }

@@ -1,10 +1,15 @@
-const { Usuario, Modulo } = require("../models");
+const { Usuario, Modulo, UsuarioTemporario } = require("../models");
 const bcrypt = require("bcrypt");
+const { gerarCodigoEmail } = require("../utils/validarEmail");
 
-async function getDadosUser() {
+async function getDadosUserPaginados(pagina = 1) {
   try {
+    const limit = 4
+    const offset = (pagina - 1) * limit
     return await Usuario.findAll({
       attributes: { exclude: ["senha"] },
+      offset,
+      limit
     });
   } catch (error) {
     console.error(error);
@@ -22,6 +27,38 @@ async function getDadosUserById(id) {
     console.error(error);
     throw new Error("Erro ao buscar usuário por ID");
   }
+}
+
+
+async function createUser(nome, email, senha, tipo, isUserTemporario){
+    try{
+      const hashedPassword = await bcrypt.hash(senha, 10);
+
+      if (isUserTemporario){
+        const codigoEmail = gerarCodigoEmail()
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
+
+        await UsuarioTemporario.create(
+          { username: nome, email, senha: hashedPassword, verificationCode: codigoEmail, tipo, expiresAt}
+        )
+        return {isUserTemporario, codigoEmail}
+      }
+
+    
+      const verificaUsuarioTemporario = await UsuarioTemporario.findOne({where: {email}})
+      if (verificaUsuarioTemporario){
+          const usuarioTemporario = verificaUsuarioTemporario.dataValues 
+          await Usuario.create({ username: nome, email, senha: usuarioTemporario.senha, tipo});
+          return
+      }
+
+      await Usuario.create({ username: nome, email, senha: hashedPassword, tipo});
+      return true
+
+    }catch(error){
+      console.error(error);
+      throw new Error("Erro ao criar usuário");
+    }
 }
 
 async function updateUser(idAdm, senhaAdm, username, email, tipo, idEditar) {
@@ -122,11 +159,27 @@ async function verificaModuloEhDoUsuario(id_usuario, id_modulo) {
   }
 }
 
+
+async function infoPaginacaoUsuarios(){
+  try {
+    const limit = 4;
+    const totalRegistros = await Usuario.count();
+    const totalPaginas = Math.ceil(totalRegistros / limit);
+    
+    return { totalPaginas, totalRegistros }
+  } catch (error) {
+    console.error('Erro ao buscar informações dos usuários', error)
+    throw new Error('Erro ao buscar informações dos usuários')
+  }
+}
+
 module.exports = {
-  getDadosUser,
+  getDadosUserPaginados,
   getDadosUserById,
+  createUser,
   updateUser,
   deleteUser,
   atualizarPerfil,
   verificaModuloEhDoUsuario,
+  infoPaginacaoUsuarios
 };

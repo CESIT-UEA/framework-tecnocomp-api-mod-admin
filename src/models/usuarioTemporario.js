@@ -1,8 +1,9 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db/connect');
 
-const Usuario = sequelize.define('Usuario', {
-  id: {
+
+const UsuarioTemporario = sequelize.define('usuarioTemporario', {
+    id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
@@ -25,16 +26,16 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.ENUM('adm', 'professor'),
     allowNull: false,
   },
-  password_reset_token: {
+  verificationCode: {
     type: DataTypes.STRING
   },
-  password_reset_expires: {
+  expiresAt: {
     type: DataTypes.DATE
   }
 }, {
-  sequelize,
-  tableName: 'Usuarios',
-  timestamps: false,
-});
+    tableName: 'usuarioTemporario',
+    timestamps: false
+})
 
-module.exports = Usuario;
+
+module.exports = UsuarioTemporario;
