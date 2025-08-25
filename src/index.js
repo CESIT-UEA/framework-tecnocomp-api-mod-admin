@@ -23,7 +23,6 @@ const alunoRoutes = require('./routes/aluno');
 const autoRegister = require('./routes/autoRegister')
 const forgotPassword = require('./routes/forgotPassword')
 const exercicioRoutes = require('./routes/exercicios')
-const autoRegister = require('./routes/autoRegister')
 
 const app = express();
 const PORT = 8001;
