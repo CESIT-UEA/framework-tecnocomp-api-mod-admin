@@ -19,7 +19,7 @@ const Usuario = sequelize.define('Usuario', {
   },
   senha: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   tipo: {
     type: DataTypes.ENUM('adm', 'professor'),

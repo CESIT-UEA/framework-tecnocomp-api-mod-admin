@@ -4,10 +4,40 @@ const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models');
 const authorizeRole = require('../middleware/authorizeRole');
 const authMiddleware = require('../middleware/auth');
-const { createUser } = require('../services/usuario');
+const { createUser, createUserWithGoogle } = require('../services/usuario');
 const router = express.Router();
 const SECRET_KEY = 'your_secret_key';
 const REFRESH_SECRET_KEY = 'your_refresh_secret_key';
+const fetch = require("node-fetch");
+const { validarToken } = require('../utils/validarToken')
+
+
+router.post('/login-google', async (req, res)=> {
+  const { credential } = req.body; 
+  try {
+    const userInfo = await validarToken(credential);
+    const email = userInfo.email;
+
+    let usuario = await Usuario.findOne({ where: { email } });
+
+    if (!usuario) {
+      usuario = await createUserWithGoogle(userInfo)
+    }
+
+    const accessToken = jwt.sign(
+      { id: usuario.id, tipo: usuario.tipo, username: usuario.username, email: usuario.email },
+      SECRET_KEY,
+      { expiresIn: '1h' }
+    );
+
+    const refreshToken = jwt.sign({ id: usuario.id }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
+
+    res.json({ accessToken, refreshToken });
+
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao fazer login com o google" });
+  }
+})
 
 
 /**

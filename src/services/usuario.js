@@ -32,6 +32,10 @@ async function getDadosUserById(id) {
 
 async function createUser(nome, email, senha, tipo, isUserTemporario){
     try{
+      if (!senha){
+        throw new Error('Senha obrigatória')
+      }
+
       const hashedPassword = await bcrypt.hash(senha, 10);
 
       if (isUserTemporario){
@@ -173,6 +177,31 @@ async function infoPaginacaoUsuarios(){
   }
 }
 
+
+async function createUserWithGoogle(userInfo){
+    try { 
+      console.log("Entrou no create")
+      if (!userInfo.name || !userInfo.email){ 
+        return false
+      }
+      console.log('chegou aquiiiii')
+
+      const username = userInfo.name;
+      const email = userInfo.email;
+
+      const usuario = await Usuario.create({
+        username,
+        email,
+        senha: null,
+        tipo: 'professor'
+      })
+      console.log(usuario)
+      return usuario
+    } catch (error) {
+      throw new Error('Erro ao crir usuário com o Google')
+    }
+}
+
 module.exports = {
   getDadosUserPaginados,
   getDadosUserById,
@@ -181,5 +210,6 @@ module.exports = {
   deleteUser,
   atualizarPerfil,
   verificaModuloEhDoUsuario,
-  infoPaginacaoUsuarios
+  infoPaginacaoUsuarios,
+  createUserWithGoogle
 };
