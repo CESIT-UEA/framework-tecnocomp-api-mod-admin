@@ -19,7 +19,7 @@ async function criarExercicios(idTopico, exercicios) {
 
           await Alternativas.bulkCreate(alternativas);
       } else {
-        await Exercicios.update({ criterios: exercicio.respostaEsperada},{ where: {
+        await Exercicios.update({ resposta_esperada: exercicio.respostaEsperada},{ where: {
           id_topico: idTopico
         }} )
       }
