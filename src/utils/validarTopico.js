@@ -33,11 +33,12 @@ function isNullOrEmpty(value) {
   }
   
   function validarExercicios(exercicios, erros) {
-    exercicios.forEach((exercicio, exIndex) => {
+    if (!exercicios[0].isQuestaoAberta){
+      exercicios.forEach((exercicio, exIndex) => {
       if (isNullOrEmpty(exercicio.questao)) {
         erros.push(`A questão do exercício na posição ${exIndex + 1} está ausente.`);
       }
-  
+      
       if (!Array.isArray(exercicio.alternativas) || exercicio.alternativas.length !== 4) {
         erros.push(
           `O exercício na posição ${exIndex + 1} deve conter exatamente 4 alternativas.`
@@ -62,6 +63,10 @@ function isNullOrEmpty(value) {
         }
       });
     });
+    }
+    if (exercicios[0].isQuestaoAberta){
+      console.log('Questão discursiva', exercicios)
+    }
   }
   
   function validarTopico(dadosTopico) {

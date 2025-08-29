@@ -9,14 +9,21 @@ async function criarExercicios(idTopico, exercicios) {
         questao: exercicio.questao,
       });
 
-      const alternativas = exercicio.alternativas.map((alt) => ({
-        id_exercicio: novoExercicio.id,
-        descricao: alt.descricao,
-        explicacao: alt.explicacao,
-        correta: alt.correta,
-      }));
+      if (!exercicio.isQuestaoAberta){
+          const alternativas = exercicio.alternativas.map((alt) => ({
+            id_exercicio: novoExercicio.id,
+            descricao: alt.descricao,
+            explicacao: alt.explicacao,
+            correta: alt.correta,
+          }));
 
-      await Alternativas.bulkCreate(alternativas);
+          await Alternativas.bulkCreate(alternativas);
+      } else {
+        await Exercicios.update({ criterios: exercicio.respostaEsperada},{ where: {
+          id_topico: idTopico
+        }} )
+      }
+      setQuestaoAberta(idTopico, exercicio.isQuestaoAberta)
     }
   } catch (error) {
     console.error('Erro ao criar Exercícios:', error);

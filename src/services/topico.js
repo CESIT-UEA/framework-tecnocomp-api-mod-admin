@@ -41,6 +41,7 @@ async function obterTopicoCompletoPaginadosPorModulo(idModulo, pagina = 1) {
 }
 
 async function criarTopico(dadosTopico) {
+  console.log('Entrei na função criar tópicos', dadosTopico.exercicios)
   const erros = validarTopico(dadosTopico);
   if (erros.length > 0) {
     throw new Error(`Validação falhou: ${erros.join("; ")}`);
