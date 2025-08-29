@@ -21,7 +21,7 @@ const Exercicios = sequelize.define('Exercicios', {
   aberta: {
     type: DataTypes.BOOLEAN
   },
-  criterios: {
+  resposta_esperada: {
     type: DataTypes.CHAR
   }
 }, {
