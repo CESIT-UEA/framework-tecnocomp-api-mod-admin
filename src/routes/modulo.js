@@ -388,7 +388,7 @@ router.post(
     try {
       res.status(200).json({
         message: "Arquivo salvo com sucesso",
-        filePath: path.join(__dirname, "uploads", req.file.filename),
+        filePath: path.join(__dirname, "ebooks", req.file.filename),
         fileName: req.file.filename,
       });
     } catch (error) {
@@ -415,7 +415,7 @@ router.post(
  *         description: Arquivo retornado
  */
 router.get("/modulos/file/:name", (req, res) => {
-  res.sendFile(__dirname + "/uploads/" + req.params.name);
+  res.sendFile(__dirname + "/ebooks/" + req.params.name);
 });
 
 /**
