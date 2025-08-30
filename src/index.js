@@ -7,6 +7,7 @@ const fs = require('fs');
 const https = require('https');
 const { sequelize } = require('./db/connect');
 const { Usuario } = require('./models');
+const path = require('path')
 
 const authRoutes = require('./routes/auth');
 const plataformaRoutes = require('./routes/plataforma');
@@ -89,6 +90,7 @@ app.use('/api', forgotPassword)
 app.use('/api', exercicioRoutes);
 app.use('/api', autoRegister);
 
+app.use('/ebooks', express.static(path.join(__dirname, "ebooks")))
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Inicializa o servidor e cria um administrador padrão se não existir
