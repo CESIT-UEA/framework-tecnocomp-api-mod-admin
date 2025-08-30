@@ -9,7 +9,7 @@ const authorizeRole = require("../middleware/authorizeRole");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "src/routes/uploads/");
+    cb(null, path.join(__dirname, "ebooks"));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
