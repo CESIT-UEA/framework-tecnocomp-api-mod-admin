@@ -7,9 +7,11 @@ const multer = require("multer");
 const path = require("path");
 const authorizeRole = require("../middleware/authorizeRole");
 
+const uploadPath = process.env.FILE_PATH;
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.resolve("ebooks"));
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -389,7 +391,7 @@ router.post(
     try {
       res.status(200).json({
         message: "Arquivo salvo com sucesso",
-        filePath: path.join(path.resolve("ebooks"), req.file.filename),
+        filePath: path.join(process.env.FILE_PATH, req.file.filename),
         fileName: req.file.filename,
       });
     } catch (error) {
@@ -416,7 +418,7 @@ router.post(
  *         description: Arquivo retornado
  */
 router.get("/modulos/file/:name", (req, res) => {
-  res.sendFile(path.resolve("ebooks", req.params.name));
+  res.sendFile(path.join(process.env.FILE_PATH, req.params.name));
 });
 
 /**
