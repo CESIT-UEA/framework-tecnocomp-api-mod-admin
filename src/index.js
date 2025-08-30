@@ -90,7 +90,7 @@ app.use('/api', forgotPassword)
 app.use('/api', exercicioRoutes);
 app.use('/api', autoRegister);
 
-app.use('/ebooks', express.static(path.join(__dirname, "ebooks")))
+app.use('/ebooks', express.static(path.resolve("ebooks")))
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Inicializa o servidor e cria um administrador padrão se não existir
