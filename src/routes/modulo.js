@@ -6,11 +6,17 @@ const authMiddleware = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
 const authorizeRole = require("../middleware/authorizeRole");
+const fs = require('fs')
 
 const uploadPath = process.env.FILE_PATH;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    const nomeModulo = req.body.nomeModulo;
+    const uploadPath = path.join(process.env.FILE_PATH, nomeModulo)
+
+    fs.mkdirSync(uploadPath, { recursive: true })
+
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
@@ -389,9 +395,10 @@ router.post(
   authorizeRole(["adm", "professor"]),
   async (req, res) => {
     try {
+      const nomeModulo = req.body.nomeModulo;
       res.status(200).json({
         message: "Arquivo salvo com sucesso",
-        filePath: path.join(process.env.FILE_PATH, req.file.filename),
+        filePath: path.join(process.env.FILE_PATH, nomeModulo, req.file.filename),
         fileName: req.file.filename,
       });
     } catch (error) {
