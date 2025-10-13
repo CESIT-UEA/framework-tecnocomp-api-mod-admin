@@ -8,25 +8,8 @@ const path = require("path");
 const authorizeRole = require("../middleware/authorizeRole");
 const fs = require('fs')
 
-const uploadPath = process.env.FILE_PATH;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const nomeModulo = req.body.nomeModulo || 'sem-nome-modulo';
-    console.log('aqui', req.body)
-    const uploadPath = path.join(process.env.FILE_PATH, nomeModulo)
-
-    fs.mkdirSync(uploadPath, { recursive: true })
-
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
+const upload = multer({ storage: multer.memoryStorage() });
 
 /**
  * @swagger
@@ -397,7 +380,10 @@ router.post(
   async (req, res) => {
     try {
       const nomeModulo = req.body.nomeModulo;
-      console.log('aqui 2 tete', nomeModulo)
+      const uploadPath = path.join(process.env.FILE_PATH, nomeModulo)
+      fs.mkdirSync(uploadPath, { recursive: true });
+      fs.writeFileSync(path.join(uploadPath, req.file.originalname), req.file.buffer);
+
       res.status(200).json({
         message: "Arquivo salvo com sucesso",
         filePath: path.join(process.env.FILE_PATH, nomeModulo, req.file.filename),
