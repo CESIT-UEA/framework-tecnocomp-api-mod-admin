@@ -28,6 +28,7 @@ async function criarModulo({
   ebookUrlGeral,
   nome_url,
   usuario_id,
+  filesDoModulo
 }) {
   try {
     const uuid = randomUUID();
@@ -39,6 +40,7 @@ async function criarModulo({
       video_inicial,
       usuario_id,
       uuid,
+      filesDoModulo
     });
 
     return modulo;

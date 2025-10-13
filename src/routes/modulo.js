@@ -48,7 +48,7 @@ router.post(
   authMiddleware,
   authorizeRole(["adm", "professor"]),
   async (req, res) => {
-    const { nome_modulo, video_inicial, ebookUrlGeral, nome_url, usuario_id } =
+    const { nome_modulo, video_inicial, ebookUrlGeral, nome_url, usuario_id, filesDoModulo } =
       req.body;
 
     try {
@@ -58,6 +58,7 @@ router.post(
         ebookUrlGeral,
         nome_url,
         usuario_id,
+        filesDoModulo
       });
 
       res.status(201).json({ modulo });

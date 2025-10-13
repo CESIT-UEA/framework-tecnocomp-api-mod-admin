@@ -47,6 +47,10 @@ const Modulo = sequelize.define('Modulo',
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  filesDoModulo: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  }
 }, {
   tableName: 'Modulos',
   timestamps: false,
