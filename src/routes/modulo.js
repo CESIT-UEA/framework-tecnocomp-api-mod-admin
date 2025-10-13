@@ -397,6 +397,7 @@ router.post(
   async (req, res) => {
     try {
       const nomeModulo = req.body.nomeModulo;
+      console.log('aqui 2',nomeModulo)
       res.status(200).json({
         message: "Arquivo salvo com sucesso",
         filePath: path.join(process.env.FILE_PATH, nomeModulo, req.file.filename),
