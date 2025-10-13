@@ -12,7 +12,7 @@ const uploadPath = process.env.FILE_PATH;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const nomeModulo = req.body.nomeModulo;
+    const nomeModulo = req.body.nomeModulo || 'sem-nome-modulo';
     console.log('aqui', req.body)
     const uploadPath = path.join(process.env.FILE_PATH, nomeModulo)
 
