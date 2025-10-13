@@ -379,15 +379,19 @@ router.post(
   authorizeRole(["adm", "professor"]),
   async (req, res) => {
     try {
-      const nomeModulo = req.body.nomeModulo;
-      const uploadPath = path.join(process.env.FILE_PATH, nomeModulo)
+      const nomeModulo = req.body.nomeModulo || 'sem-nome-modulo';
+      const uploadPath = path.join(process.env.FILE_PATH, nomeModulo) 
+
+      console.log(nomeModulo)
+      console.log(uploadPath)
+
       fs.mkdirSync(uploadPath, { recursive: true });
       fs.writeFileSync(path.join(uploadPath, req.file.originalname), req.file.buffer);
 
       res.status(200).json({
         message: "Arquivo salvo com sucesso",
-        filePath: path.join(process.env.FILE_PATH, nomeModulo, req.file.filename),
-        fileName: req.file.filename,
+        filePath: path.join(process.env.FILE_PATH, nomeModulo, req.file.originalname),
+        fileName: req.file.originalname,
       });
     } catch (error) {
       console.error("Erro ao salvar arquivo:", error);
