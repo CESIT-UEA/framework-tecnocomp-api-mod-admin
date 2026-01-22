@@ -33,25 +33,25 @@ const swaggerSpec = require('./config/swagger');
 
 const cron = require('node-cron')
 
-// const { UsuarioTemporario } = require('./models')
+const { UsuarioTemporario } = require('./models')
 const { Op } =  require('sequelize')
 
 
 // limpa os registros de usuários temporários a cada 30 minutos
-// cron.schedule('*/30 * * * *', async ()=>{
-//     try {
-//       const deleted = await UsuarioTemporario.destroy({
-//           where: {
-//             expiresAt: {
-//               [Op.lt]: new Date()
-//             }
-//           }
-//       })
-//       console.log(`Cron: ${deleted} registro(s) expirados removidos.`);
-//     } catch (error) {
-//       console.error('Erro ao executar cron job:', error);
-//     }
-// })
+cron.schedule('*/30 * * * *', async ()=>{
+    try {
+      const deleted = await UsuarioTemporario.destroy({
+          where: {
+            expiresAt: {
+              [Op.lt]: new Date()
+            }
+          }
+      })
+      console.log(`Cron: ${deleted} registro(s) expirados removidos.`);
+    } catch (error) {
+      console.error('Erro ao executar cron job:', error);
+    }
+})
 
 
 let sslOptions;
