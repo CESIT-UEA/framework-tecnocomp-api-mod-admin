@@ -16,6 +16,7 @@ router.post('/login-google', async (req, res)=> {
   const { credential } = req.body; 
   try {
     const userInfo = await validarToken(credential);
+    console.log('userInfo', userInfo)
     const email = userInfo.email;
 
     let usuario = await Usuario.findOne({ where: { email } });
