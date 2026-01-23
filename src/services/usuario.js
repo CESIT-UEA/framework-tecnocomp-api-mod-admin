@@ -200,6 +200,7 @@ async function createUserWithGoogle(userInfo){
 }
 
 async function syncFotoDePerfil(usuario, googlePayload) {
+    console.log(googlePayload.picture)
     if (!googlePayload.picture) return
 
     if (usuario.url_foto !== googlePayload.picture){
