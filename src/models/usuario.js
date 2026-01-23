@@ -26,7 +26,7 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false,
   },
   url_foto: {
-    types: DataTypes.STRING,
+    type: DataTypes.STRING,
     allowNull: true
   },
   password_reset_token: {
