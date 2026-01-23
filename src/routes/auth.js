@@ -28,7 +28,7 @@ router.post('/login-google', async (req, res)=> {
     await syncFotoDePerfil(usuario, userInfo)
 
     const accessToken = jwt.sign(
-      { id: usuario.id, tipo: usuario.tipo, username: usuario.username, email: usuario.email },
+      { id: usuario.id, tipo: usuario.tipo, username: usuario.username, email: usuario.email, url_foto: usuario.url_foto },
       SECRET_KEY,
       { expiresIn: '1h' }
     );
