@@ -7,7 +7,7 @@ async function getDadosUserPaginados(pagina = 1) {
     const limit = 4
     const offset = (pagina - 1) * limit
     return await Usuario.findAll({
-      attributes: { exclude: ["senha"] },
+      attributes: { exclude: ["senha", "password_reset_token", "password_reset_expires"] },
       offset,
       limit
     });
@@ -21,7 +21,7 @@ async function getDadosUserById(id) {
   try {
     return await Usuario.findOne({
       where: { id },
-      attributes: { exclude: ["senha"] },
+      attributes: { exclude: ["senha", "password_reset_token", "password_reset_expires"] },
     });
   } catch (error) {
     console.error(error);
@@ -180,11 +180,9 @@ async function infoPaginacaoUsuarios(){
 
 async function createUserWithGoogle(userInfo){
     try { 
-      console.log("Entrou no create")
       if (!userInfo.name || !userInfo.email){ 
         return false
       }
-      console.log('chegou aquiiiii')
 
       const username = userInfo.name;
       const email = userInfo.email;
@@ -195,10 +193,18 @@ async function createUserWithGoogle(userInfo){
         senha: null,
         tipo: 'professor'
       })
-      console.log(usuario)
       return usuario
     } catch (error) {
       throw new Error('Erro ao crir usuário com o Google')
+    }
+}
+
+async function syncFotoDePerfil(usuario, googlePayload) {
+    if (!googlePayload.picture) return
+
+    if (usuario.url_foto !== googlePayload.picture){
+      usuario.url_foto = googlePayload.picture
+      await usuario.save()
     }
 }
 
@@ -211,5 +217,6 @@ module.exports = {
   atualizarPerfil,
   verificaModuloEhDoUsuario,
   infoPaginacaoUsuarios,
-  createUserWithGoogle
+  createUserWithGoogle,
+  syncFotoDePerfil
 };
