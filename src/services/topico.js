@@ -40,6 +40,28 @@ async function obterTopicoCompletoPaginadosPorModulo(idModulo, pagina = 1) {
   }
 }
 
+
+async function obterTopicoCompletoPorModulo(idModulo) {
+  try {
+    return await Topico.findAll({
+      where: { id_modulo: idModulo },
+      include: [
+        { model: VideoUrls, as: "VideoUrls" },
+        { model: SaibaMais, as: "SaibaMais" },
+        { model: Referencias, as: "Referencias" },
+        {
+          model: Exercicios,
+          as: "Exercicios",
+          include: [{ model: Alternativas, as: "Alternativas" }],
+        },
+      ],
+    });
+  } catch (error) {
+    console.error("Erro ao obter tópicos completos:", error);
+    throw error;
+  }
+}
+
 async function criarTopico(dadosTopico) {
   console.log('Entrei na função criar tópicos', dadosTopico.exercicios)
   const erros = validarTopico(dadosTopico);
@@ -347,5 +369,6 @@ module.exports = {
   excluirTopico,
   obterTopicoPorId,
   clonarTopicoCompleto,
-  infoTopicosPorModulo
+  infoTopicosPorModulo,
+  obterTopicoCompletoPorModulo
 };
