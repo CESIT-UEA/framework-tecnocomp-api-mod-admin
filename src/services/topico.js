@@ -77,7 +77,6 @@ async function criarTopico(dadosTopico) {
       textoApoio,
       videoUrls,
       saibaMais,
-      referencias,
       exercicios,
     } = dadosTopico;
 
@@ -92,8 +91,8 @@ async function criarTopico(dadosTopico) {
       await videoUrlsService.criarVideoUrls(novoTopico.id, videoUrls);
     if (saibaMais)
       await saibaMaisService.criarSaibaMais(novoTopico.id, saibaMais);
-    if (referencias)
-      await referenciasService.criarReferencias(novoTopico.id, referencias);
+    // if (referencias)
+    //   await referenciasService.criarReferencias(novoTopico.id, referencias);
     if (exercicios)
       await exerciciosService.criarExercicios(novoTopico.id, exercicios);
 

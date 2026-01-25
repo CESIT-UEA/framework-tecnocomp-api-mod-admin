@@ -81,7 +81,7 @@ function isNullOrEmpty(value) {
   
     if (dadosTopico.videoUrls) validarVideoUrls(dadosTopico.videoUrls, erros);
     if (dadosTopico.saibaMais) validarSaibaMais(dadosTopico.saibaMais, erros);
-    if (dadosTopico.referencias) validarReferencias(dadosTopico.referencias, erros);
+    // if (dadosTopico.referencias) validarReferencias(dadosTopico.referencias, erros);
     if (dadosTopico.exercicios) validarExercicios(dadosTopico.exercicios, erros);
   
     return erros;
