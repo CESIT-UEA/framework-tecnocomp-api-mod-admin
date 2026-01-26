@@ -218,16 +218,16 @@ async function editarTopico(id, dadosAtualizados) {
     }
 
     // Atualizar ou substituir Referencias
-    if (referencias) {
-      await Referencias.destroy({ where: { id_topico: id } });
-      for (const ref of referencias) {
-        await Referencias.create({
-          id_topico: id,
-          caminhoDaImagem: ref.caminhoDaImagem,
-          referencia: ref.referencia,
-        });
-      }
-    }
+    // if (referencias) {
+    //   await Referencias.destroy({ where: { id_topico: id } });
+    //   for (const ref of referencias) {
+    //     await Referencias.create({
+    //       id_topico: id,
+    //       caminhoDaImagem: ref.caminhoDaImagem,
+    //       referencia: ref.referencia,
+    //     });
+    //   }
+    // }
 
     // Atualizar ou substituir Exercicios e suas Alternativas
     if (exercicios) {
@@ -236,16 +236,21 @@ async function editarTopico(id, dadosAtualizados) {
         const novoExercicio = await Exercicios.create({
           id_topico: id,
           questao: exercicio.questao,
+          resposta_esperada: exercicio.resposta_esperada,
+          aberta: exercicio.isQuestaoAberta
         });
+        console.log('teste',exercicio)
+        if (!exercicio.isQuestaoAberta){
+          for (const alternativa of exercicio.alternativas) {
+            await Alternativas.create({
+              id_exercicio: novoExercicio.id,
+              descricao: alternativa.descricao,
+              explicacao: alternativa.explicacao,
+              correta: alternativa.correta,
+            });
+          } 
 
-        for (const alternativa of exercicio.alternativas) {
-          await Alternativas.create({
-            id_exercicio: novoExercicio.id,
-            descricao: alternativa.descricao,
-            explicacao: alternativa.explicacao,
-            correta: alternativa.correta,
-          });
-        }
+        } 
       }
     }
 
@@ -274,6 +279,7 @@ async function obterTopicoPorId(id) {
         },
       ],
     });
+    console.log(topico.Exercicios)
     // console.log(JSON.stringify(topico, null, 2));
     if (!topico) {
       throw new Error("Tópico não encontrado");
