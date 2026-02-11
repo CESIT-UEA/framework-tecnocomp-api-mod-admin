@@ -3,6 +3,7 @@ const router = express.Router();
 const fichaService = require("../services/ficha-tecnica");
 const authMiddleware = require("../middleware/auth");
 const authorizeRole = require("../middleware/authorizeRole");
+const { clonarFichaTecnica } = require('../services/ficha-tecnica')
 /**
  * @swagger
  * /api/ficha-tecnica/modulo/{modulo_id}:
@@ -75,5 +76,18 @@ router.get(
     }
   }
 );
+
+
+router.post("/ficha-tecnica/:modulo_atual_id/clonar/:modulo_id", async (req, res)=> {
+  const { modulo_atual_id , modulo_id } = req.params;
+  try {
+    const resultado = await clonarFichaTecnica(modulo_atual_id, modulo_id)
+  
+    res.status(200).json(resultado)
+  } catch (error) {
+    res.status(200).json({'message': 'erro ao clonar'})
+  }
+})
+
 
 module.exports = router;
