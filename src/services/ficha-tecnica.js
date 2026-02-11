@@ -45,27 +45,52 @@ async function clonarFichaTecnica(modulo_id_que_vai_clonar, modulo_id_que_esta_s
     if (!ficha) throw new Error('Ficha técnica a ser clonada não encontrada!')
 
     // criando ficha técnica clone com o id do módulo que está clonando
-    // const novaFichaTecnica = await criarFichaTecnica(modulo_id_que_vai_clonar);
+    const novaFichaTecnica = await criarFichaTecnica(modulo_id_que_vai_clonar);
     
-    let equipes = await listarEquipes(ficha.dataValues.id)
-    console.log(equipes)
-    if (!equipes) return null
-
-
-    // if (equipes?.length){
-    //   equipes = equipes.map(equipes => ({ 
-    //     nome: equipes.dataValues.nome, 
-    //     ficha_tecnica_id: novaFichaTecnica.dataValues.id }
-    //   ))
-    //   await Equipe.bulkCreate(equipes)
-    // }
+    const equipesAntigas = await listarEquipes(ficha.dataValues.id)
     
-    console.log('teste', equipes.dataValues.id)
-    let membros = equipes.map(async (equipe) => {
-       await listarMembros(equipe.dataValues.id)
-    })
-    console.log(membros)
-    return { ficha: ficha.dataValues, equipes }
+    if (!equipesAntigas) return null
+
+    let equipesCriadas
+    if (equipesAntigas?.length){
+
+      idsEquipes = equipesAntigas.map(equipes => equipes.dataValues.id)
+
+      equipesCriadas = equipesAntigas.map(equipes => ({ 
+        nome: equipes.dataValues.nome, 
+        ficha_tecnica_id: novaFichaTecnica.dataValues.id 
+      })
+      )
+      equipesCriadas = await Equipe.bulkCreate(equipesCriadas, { returning: true })
+    }
+
+    
+    const mapaEquipes = {};
+
+    equipesAntigas.forEach((equipeAntiga, index) => {
+      mapaEquipes[equipeAntiga.dataValues.id] = equipesCriadas[index].dataValues.id;
+    });
+    
+    
+    let membros = await Promise.all(
+      Object.keys(mapaEquipes).map(id => listarMembros(Number(id)))
+    )
+
+    const membrosSemId = membros
+      .flat()
+      .map(m => ({
+        nome: m.dataValues.nome,
+        cargo: m.dataValues.cargo,
+        foto_url: m.dataValues.foto_url,
+        equipe_id: mapaEquipes[m.dataValues.equipe_id]
+      }));
+   
+
+    if (Array.isArray(membrosSemId) && membrosSemId.length > 0){
+      await Membro.bulkCreate(membrosSemId)
+    }
+
+    return { ficha: ficha.dataValues, equipesCriadas, membros }
 
   } catch (error) {
     throw new Error('Erro ao retornar dados')

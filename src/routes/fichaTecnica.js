@@ -85,7 +85,7 @@ router.post("/ficha-tecnica/:modulo_atual_id/clonar/:modulo_id", async (req, res
   
     res.status(200).json(resultado)
   } catch (error) {
-    res.status(200).json({'message': 'erro ao clonar'})
+    res.status(401).json({'message': 'erro ao clonar'})
   }
 })
 
